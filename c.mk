@@ -22,13 +22,15 @@ OBJS   := $(OBJS:%=$(LIB)/%)
 $(LIB)/%.o : %.c
 	$(CC) $(CCOPT) $(CFLAGS) -c $< -o $@
 
+ifdef DEST
 $(DEST)/% : $(LIB)/%
 	cp $< $@
 	chmod a+r $@
+endif
 
-all : $(DIRS) $(LIBS) $(SOLIBS) $(EXES) $(INSTALLED)
+all : $(DIRS) $(LIBS) $(SOLIBS) $(EXES)
 
-html :
+install : $(INSTALLED)
 
 include $(TEMPLATES)/post.mk
 
