@@ -5,7 +5,7 @@ SOOPT_OSF1      := -all
 
 CC_Linux        := gcc
 CCOPT_Linux     := -Wall -Wpointer-arith -Wcast-qual \
-		-Wwrite-strings -Wstrict-prototypes
+		-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes
 
 SOOPT_Linux     := 
 
@@ -17,9 +17,9 @@ SOOPT           := $(SOOPT_$(HOST))
 
 BEXES := $(EXES:%=$(BIN)/%)
 
-.SUFFIXES : .h .c .o .a .so
-.PHONY : all
-.SECONDARY : $(BEXES)
+..SUFFIXES : .h .c .o .a .so
+..PHONY : all
+..SECONDARY : $(BEXES)
 
 LIBS   := $(LIBS:%=$(LIB)/lib%.a)
 SOLIBS := $(LIBS:%.a=%.so)
