@@ -7,6 +7,8 @@ CC_Linux        := gcc
 CCOPT_Linux     := -Wall -Wpointer-arith -Wcast-qual \
 		-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes
 
+LD              := ld
+
 CFLAGS_Linux    := -pipe
 
 SOOPT_Linux     := 
@@ -23,18 +25,32 @@ BEXES := $(EXES:%=$(BIN)/%)
 .PHONY : all install
 .SECONDARY : $(BEXES)
 
-ALIBS  := $(LIBS:%=$(LIB)/lib%.a)
-SOLIBS := $(ALIBS:%.a=%.so)
-OBJS   := $(OBJS:%=$(LIB)/%)
+ALIBS  := $(LIBS:%=$(LIB)/%.a)
+SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
 $(LIB)/%.o : %.c
-	$(CC) $(CCOPT) $(CFLAGS) -c $< -o $@
+	$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
 
+$(LIB)/%.so : 
+	$(LD) -shared $(SOOPT) -o $@\
+	  $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))) -lc
+	-$(RM) so_locations
 
-all : $(DIRS) $(ALIBS) $(SOLIBS) $(EXES)
-	@make install
+$(LIB)/%.a :
+	$(AR) crvs $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 
-install : $(INSTALLED)
+$(BIN)/% :
+	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(LARGS_$(@F))
+
+$(DEST_LIBS)/% : $(LIB)/%
+	/bin/cp -f $< $@
+	/bin/chmod a+r $@
+
+$(DEST_EXES)/% : $(BIN)/%
+	/bin/cp -f $< $@
+	/bin/chmod a+r $@
+
+all : $(DIRS) $(ALIBS) $(SOLIBS) $(INST_LIBS) $(EXES) $(INST_EXES)
 
 include $(TEMPLATES)/post.mk
 
