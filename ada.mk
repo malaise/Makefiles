@@ -34,12 +34,14 @@ $(BIN)/%.stat : $(DIRS) %.adb
 	@cd $(LIB); \
 	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
+	  -bargs -static \
 	  -largs $(LARGS_$(@F)) $(LARGS)
 
 $(BIN)/% : $(DIRS) %.adb
 	@cd $(LIB); \
 	$(GNATMAKE) ../$(@F) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
+	  -bargs -shared \
 	  -largs $(CPATH) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
                           $(LARGS_$(@F)) $(LARGS)
 
