@@ -63,7 +63,8 @@ libs : $(LIB)
 	  else \
 	    $(ADA) ../$$file.ads; \
 	  fi; \
-	done
+	done; \
+	exit 0
 else
 libs :;
 endif
