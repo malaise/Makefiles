@@ -1,4 +1,4 @@
-..PHONY : afpx clean_afpx clean clean_exe clean_all new scratch html clean_html
+.PHONY : afpx clean_afpx clean clean_exe clean_all new scratch html clean_html
 
 # Sub dirs
 $(BIN) :

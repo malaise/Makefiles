@@ -17,9 +17,9 @@ SOOPT           := $(SOOPT_$(HOST))
 
 BEXES := $(EXES:%=$(BIN)/%)
 
-..SUFFIXES : .h .c .o .a .so
-..PHONY : all install
-..SECONDARY : $(BEXES)
+.SUFFIXES : .h .c .o .a .so
+.PHONY : all install
+.SECONDARY : $(BEXES)
 
 ALIBS  := $(LIBS:%=$(LIB)/lib%.a)
 SOLIBS := $(ALIBS:%.a=%.so)
