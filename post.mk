@@ -1,4 +1,4 @@
-.PHONY: afpx clean_afpx clean clean_exe clean_all new html clean_html
+.PHONY : afpx clean_afpx clean clean_exe clean_all new scratch html clean_html
 
 # Sub dirs
 $(BIN) :
@@ -7,17 +7,21 @@ $(BIN) :
 $(LIB) :
 	$(MKDIR) $@
 
-# Link exe
-BEXES := $(EXES:%=$(BIN)/%)
+# Local exes
+ifdef EXES
+% : $(BIN)/%
+	@$(LN) $< $@
+
 $(EXES) : $(BEXES)
-	$(LN) $< $@
+	@$(LN) $< $@
+endif
 
 # Afpx stuff
 ifdef AFPX
 AFPX_FILES := AFPX.DSC AFPX.FLD AFPX.INI
 afpx : $(AFPX_FILES)
 
-$(AFPX_FILES) : AFPX.LIS
+$(AFPX_FILES) :: AFPX.LIS
 	afpx_bld
 
 clean_afpx :
@@ -40,7 +44,10 @@ clean_exe :
 
 clean_all : clean clean_exe clean_afpx
 
-new : clean
+new : clean_exe
+	@$(MAKE)
+
+scratch : clean_all
 	@$(MAKE)
 
 # Html stuff

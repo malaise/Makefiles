@@ -12,8 +12,11 @@ CFLAGS          := $(CFLAGS_$(HOST)) $(DEBUG) -pthread
 CCOPT           := $(CCOPT_$(HOST))
 SOOPT           := $(SOOPT_$(HOST))
 
-.SUFFIXES: .h .c .o .a .so
-.PHONY: all
+BEXES := $(EXES:%=$(BIN)/%)
+
+.SUFFIXES : .h .c .o .a .so
+.PHONY : all
+.SECONDARY : $(BEXES)
 
 LIBS   := $(LIBS:%=$(LIB)/lib%.a)
 SOLIBS := $(LIBS:%.a=%.so)
