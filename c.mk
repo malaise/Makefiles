@@ -8,7 +8,7 @@ SOOPT_Linux     :=
 
 CC              := $(CC_$(HOST))
 DEBUG           := 
-CFLAGS          := $(CFLAGS_$(HOST)) $(DEBUG) -pthread
+CFLAGS          := $(CFLAGS_$(HOST)) $(DEBUG) -D$(HOST) -pthread
 CCOPT           := $(CCOPT_$(HOST))
 SOOPT           := $(SOOPT_$(HOST))
 
