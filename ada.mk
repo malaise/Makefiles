@@ -4,10 +4,11 @@ GNATHTMLFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 endif
 GNATMAKEFLAG   := $(GNATMAKEFLAG) -i
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
+GNATHTMLOPT    ?= -d
 
 GNATHTML       := gnathtml $(GNATHTMLFLAG)
-GNATMAKE       := gnatmake $(GNATMAKEFLAG)
-ADA            := $(GNATMAKE) -c $(ADAOPT) $(ADAFLAG)
+GNATMAKE       := gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
+ADA            := $(GNATMAKE) -c
 
 ifdef CPATH
 CPATH          := $(CPATH:%=-L%/$(LIB))
@@ -62,7 +63,4 @@ libs :
 else
 libs :
 endif
-
-html :
-	@$(GNATHTML) $(GNATHTMLOPT) -o $(HTML) *.ad?
 
