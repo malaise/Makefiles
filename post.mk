@@ -51,7 +51,7 @@ scratch : clean_all
 	@$(MAKE)
 
 # Html stuff
-html :
+html : clean_html
 	@$(GNATHTML) $(GNATHTMLOPT) *.ad?
 
 clean_html :
