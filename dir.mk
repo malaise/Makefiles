@@ -1,4 +1,4 @@
-TARGETS := all clean clean_exe clean_all html
+TARGETS := all afpx clean clean_exe clean_afpx clean_all html
 .PHONY : $(SUBDIRS) $(TARGETS)
 
 $(TARGETS) :

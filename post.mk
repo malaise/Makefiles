@@ -3,10 +3,13 @@
 # Sub dirs
 $(BIN) :
 	$(MKDIR) $@
+	$(MAKE)
 
 $(LIB) :
 	$(MKDIR) $@
+	$(MAKE)
 
+# Link exe
 $(BIN)/% : %
 	$(LN) $(BIN)/* .
 
@@ -27,10 +30,10 @@ endif
 
 # Clean stuff
 clean :
-	$(RM) $(LIB) b~*
+	$(RM) $(LIB)/* b~*
 
 clean_exe :
-	$(RM) $(BIN) $(notdir $(EXES))
+	$(RM) $(BIN)/* $(notdir $(EXES))
 
 clean_all : clean clean_exe clean_afpx
 
