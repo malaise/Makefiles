@@ -1,4 +1,4 @@
-.PHONY : afpx clean_afpx clean clean_exe clean_all new scratch html clean_html
+..PHONY : afpx clean_afpx clean clean_exe clean_all new scratch html clean_html
 
 # Sub dirs
 $(BIN) :
@@ -17,7 +17,7 @@ $(EXES) : $(BEXES)
 endif
 
 # Afpx stuff
-ifdef AFPX
+ifeq ($(AFPX),true)
 AFPX_FILES := AFPX.DSC AFPX.FLD AFPX.INI
 afpx : $(AFPX_FILES)
 
