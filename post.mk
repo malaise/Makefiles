@@ -13,7 +13,7 @@ ifdef EXES
 	@$(LN) $< $@
 
 $(EXES) : $(BEXES)
-	@$(LN) $< $@
+	@$(LN) $(BIN)/$@
 endif
 
 # Afpx stuff
