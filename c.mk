@@ -18,23 +18,19 @@ SOOPT           := $(SOOPT_$(HOST))
 BEXES := $(EXES:%=$(BIN)/%)
 
 ..SUFFIXES : .h .c .o .a .so
-..PHONY : all
+..PHONY : all install
 ..SECONDARY : $(BEXES)
 
-LIBS   := $(LIBS:%=$(LIB)/lib%.a)
-SOLIBS := $(LIBS:%.a=%.so)
+ALIBS  := $(LIBS:%=$(LIB)/lib%.a)
+SOLIBS := $(ALIBS:%.a=%.so)
 OBJS   := $(OBJS:%=$(LIB)/%)
 
 $(LIB)/%.o : %.c
 	$(CC) $(CCOPT) $(CFLAGS) -c $< -o $@
 
-ifdef DEST
-$(DEST)/% : $(LIB)/%
-	cp $< $@
-	chmod a+r $@
-endif
 
-all : $(DIRS) $(LIBS) $(SOLIBS) $(EXES)
+all : $(DIRS) $(ALIBS) $(SOLIBS) $(EXES)
+	@make install
 
 install : $(INSTALLED)
 
