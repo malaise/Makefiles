@@ -35,7 +35,7 @@ $(BIN)/%.stat : $(DIRS) %.adb
 	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
 	  -bargs -static \
-	  -largs $(LARGS_$(@F)) $(LARGS)
+	  -largs $(LARGS_$(@F)) $(LARGS) -lm
 
 $(BIN)/% : $(DIRS) %.adb
 	@cd $(LIB); \
