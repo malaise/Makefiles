@@ -15,31 +15,30 @@ CPATH          := $(CPATH:%=-L%/$(LIB))
 endif
 
 UNITS ?= $(shell $(TEMPLATES)/units.sh)
-EXES := $(EXES:%=$(BIN)/%)
 
-.SUFFIXES: .ads .adb .o .ali
-.PHONY: alis lis
+.SUFFIXES : .ads .adb .o .ali .stat
+.PHONY : all alis libs afpx
 
-%.ali : ../%.adb
-	$(ADA) $<
+$(LIB)/%.ali $(LIB)/%.o : %.adb
+	@cd $(LIB); \
+	$(ADA) ../$(<F)
 
 all : $(DIRS) alis libs $(EXES) afpx
 
 include $(TEMPLATES)/post.mk
 
 # Static and dynamic exe
-$(BIN)/%.stat : $(BIN)
+$(BIN)/%.stat : $(BIN) %.adb
 	@cd $(LIB); \
-	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$(BIN)/$(@F) \
+	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$@ \
 	  -largs $(LARGS_$(@F)) $(LARGS)
-	@$(LN) -f $@ $(@F)
 
-$(BIN)/% : $(BIN)
+$(BIN)/% : $(BIN) %.adb
 	@cd $(LIB); \
-	$(GNATMAKE) ../$(@F) -o ../$(BIN)/$(@F) \
+	$(GNATMAKE) ../$(@F) -o ../$@ \
 	   -largs $(CPATH) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
                            $(LARGS_$(@F)) $(LARGS)
-	@$(LN) -f $@ $(@F)
+
 
 # Make ali in LIB
 alis : $(LIB)
@@ -61,6 +60,7 @@ libs :
 	  fi; \
 	done
 else
-libs :
+libs :;
 endif
+
 

@@ -1,4 +1,4 @@
-.PHONY: afpx clean clean_exe clean_all
+.PHONY: afpx clean_afpx clean clean_exe clean_all new html clean_html
 
 # Sub dirs
 $(BIN) :
@@ -8,8 +8,9 @@ $(LIB) :
 	$(MKDIR) $@
 
 # Link exe
-$(BIN)/% : %
-	$(LN) $(BIN)/* .
+BEXES := $(EXES:%=$(BIN)/%)
+$(EXES) : $(BEXES)
+	$(LN) $< $@
 
 # Afpx stuff
 ifdef AFPX
@@ -22,22 +23,30 @@ $(AFPX_FILES) : AFPX.LIS
 clean_afpx :
 	$(RM) $(AFPX_FILES)
 else
-afpx:
-clean_afpx :
+afpx :;
+
+clean_afpx :;
+
 endif
 
 # Clean stuff
 clean :
-	$(RM) $(LIB) b~*
+	$(RM) -r $(LIB)
+	@$(RM) b~*
 
 clean_exe :
-	$(RM) $(BIN) $(notdir $(EXES))
+	$(RM) -r $(BIN)
+	$(RM) $(EXES)
 
 clean_all : clean clean_exe clean_afpx
+
+new : clean
+	@$(MAKE)
+
 # Html stuff
 html :
 	@$(GNATHTML) $(GNATHTMLOPT) *.ad?
 
 clean_html :
-	$(RM) html
+	$(RM) -r html
 

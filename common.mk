@@ -1,7 +1,7 @@
 HOST            := $(shell uname -s)
 TEMPLATES       := $(HOME)/Makefiles
 
-RM              := rm -rf
+RM              := rm -f
 LN              := ln -fs
 TOUCH           := touch
 MKDIR           := mkdir -p
