@@ -1,9 +1,12 @@
 CC_OSF1         := cc
 CCOPT_OSF1      := -O -std1 -warnprotos
+
 SOOPT_OSF1      := -all
 
 CC_Linux        := gcc
-CCOPT_Linux     := -Wall
+CCOPT_Linux     := -Wall -Wpointer-arith -Wcast-qual \
+		-Wwrite-strings -Wstrict-prototypes
+
 SOOPT_Linux     := 
 
 CC              := $(CC_$(HOST))
