@@ -10,20 +10,22 @@ GNATHTML       := gnathtml $(GNATHTMLFLAG)
 GNATMAKE       := gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
 ADA            := $(GNATMAKE) -c
 
+CARGS          := $(CARGS) -pipe
+
 ifdef CPATH
 CPATH          := $(CPATH:%=-L%/$(LIB))
 endif
 
-UNITS ?= $(shell $(TEMPLATES)/units.sh)
+include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
-.SUFFIXES : .ads .adb .o .ali .stat
-.PHONY : all alis libs afpx
-.SECONDARY : $(BEXES)
+..SUFFIXES : .ads .adb .o .ali .stat
+..PHONY : all alis libs afpx
+..SECONDARY : $(BEXES)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
-	$(ADA) ../$(<F)
+	$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS)
 
 all : $(DIRS) alis libs $(EXES) afpx
 
@@ -34,6 +36,7 @@ $(BIN)/%.stat : $(DIRS) %.adb
 	@cd $(LIB); \
 	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
+	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -static \
 	  -largs $(LARGS_$(@F)) $(LARGS) -lm
 
@@ -41,6 +44,7 @@ $(BIN)/% : $(DIRS) %.adb
 	@cd $(LIB); \
 	$(GNATMAKE) ../$(@F) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
+	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -shared \
 	  -largs $(CPATH) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
                           $(LARGS_$(@F)) $(LARGS)
@@ -59,14 +63,13 @@ libs : $(LIB)
 	@cd $(LIB); \
 	for file in $(LIBS); do \
 	  if [ -f ../$$file.adb ] ; then \
-	    $(ADA) ../$$file.adb; \
+	    $(ADA) ../$$file.adb $(GARGS) -cargs $(CARGS); \
 	  else \
-	    $(ADA) ../$$file.ads; \
+	    $(ADA) ../$$file.ads $(GARGS) -cargs $(CARGS); \
 	  fi; \
 	done; \
 	exit 0
 else
 libs :;
 endif
-
 

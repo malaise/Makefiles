@@ -1,2 +1,2 @@
 
-UNITS := $(shell $(TEMPLATES)/units.sh)
+UNITS ?= $(sort $(basename $(wildcard *.ads *.adb)))

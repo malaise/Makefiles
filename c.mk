@@ -7,6 +7,8 @@ CC_Linux        := gcc
 CCOPT_Linux     := -Wall -Wpointer-arith -Wcast-qual \
 		-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes
 
+CFLAGS_Linux    := -pipe
+
 SOOPT_Linux     := 
 
 CC              := $(CC_$(HOST))
