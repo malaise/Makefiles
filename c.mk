@@ -19,11 +19,12 @@ CFLAGS          := $(CFLAGS_$(HOST)) $(DEBUG) -D$(HOST) -pthread
 CCOPT           := $(CCOPT_$(HOST))
 SOOPT           := $(SOOPT_$(HOST))
 
+OEXES := $(EXES:%=$(LIB)/%.o)
 BEXES := $(EXES:%=$(BIN)/%)
 
 .SUFFIXES : .h .c .o .a .so
 .PHONY : all install
-.SECONDARY : $(BEXES)
+.SECONDARY : $(BEXES) $(OEXES)
 
 ALIBS  := $(LIBS:%=$(LIB)/%.a)
 SOLIBS := $(LIBS:%=$(LIB)/%.so)
@@ -39,7 +40,7 @@ $(LIB)/%.so :
 $(LIB)/%.a :
 	$(AR) crvs $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 
-$(BIN)/% :
+$(BIN)/% : $(LIB)/%.o
 	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(LARGS_$(@F))
 
 $(DEST_LIBS)/% : $(LIB)/%
