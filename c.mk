@@ -32,7 +32,7 @@ SOLIBS := $(LIBS:%=$(LIB)/%.so)
 $(LIB)/%.o : %.c
 	$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
 
-$(LIB)/%.so : 
+$(LIB)/%.so :
 	$(LD) -shared $(SOOPT) -o $@\
 	  $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))) -lc
 	-$(RM) so_locations
@@ -52,6 +52,7 @@ $(DEST_EXES)/% : $(BIN)/%
 	/bin/chmod a+r $@
 
 all : $(DIRS) $(ALIBS) $(SOLIBS) $(INST_LIBS) $(EXES) $(INST_EXES)
+	$(DO_POST)
 
 include $(TEMPLATES)/post.mk
 
