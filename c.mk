@@ -43,6 +43,14 @@ $(LIB)/%.a :
 $(BIN)/% : $(LIB)/%.o
 	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(LARGS_$(@F))
 
+INSTALLED_HEADS := $(INST_HEADS:%=$(DEST_HEADS)/%)
+INSTALLED_LIBS := $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so)
+INSTALLED_EXES := $(INST_EXES:%=$(DEST_EXES)/%)
+
+$(DEST_HEADS)/% : %
+	/bin/cp -f $< $@
+	/bin/chmod a+r $@
+
 $(DEST_LIBS)/% : $(LIB)/%
 	/bin/cp -f $< $@
 	/bin/chmod a+r $@
@@ -51,7 +59,7 @@ $(DEST_EXES)/% : $(BIN)/%
 	/bin/cp -f $< $@
 	/bin/chmod a+r $@
 
-all : $(DIRS) $(ALIBS) $(SOLIBS) $(INST_LIBS) $(EXES) $(INST_EXES)
+all : $(DIRS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS) $(INSTALLED_LIBS) $(EXES) $(INSTALLED_EXES)
 	$(DO_POST)
 
 include $(TEMPLATES)/post.mk
