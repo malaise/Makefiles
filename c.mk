@@ -38,6 +38,7 @@ $(LIB)/%.so :
 	-$(RM) so_locations
 
 $(LIB)/%.a :
+	@make $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 	$(AR) crvs $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 
 $(BIN)/% : $(LIB)/%.o
