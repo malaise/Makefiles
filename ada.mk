@@ -19,9 +19,9 @@ endif
 include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
-..SUFFIXES : .ads .adb .o .ali .stat
-..PHONY : all alis libs afpx
-..SECONDARY : $(BEXES)
+.SUFFIXES : .ads .adb .o .ali .stat
+.PHONY : all alis libs afpx
+.SECONDARY : $(BEXES)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
