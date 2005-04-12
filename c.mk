@@ -33,12 +33,16 @@ $(LIB)/%.o : %.c
 	$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
 
 $(LIB)/%.so :
-	$(LD) -shared $(SOOPT) -o $@\
-	  $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))) -lc
+	@if [ "$(OBJS_$(@F:%.so=%))" != "" ]; then \
+	  make $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))); \
+	fi
+	$(LD) -shared $(SOOPT) -o $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))) -lc
 	-$(RM) so_locations
 
 $(LIB)/%.a :
-	@make $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
+	@if [ "$(OBJS_$(@F:%.a=%))" != "" ]; then \
+	  make $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%))); \
+	fi
 	$(AR) crvs $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 
 $(BIN)/% : $(LIB)/%.o
