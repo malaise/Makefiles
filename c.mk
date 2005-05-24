@@ -19,15 +19,14 @@ CFLAGS          := $(CFLAGS) $(CFLAGS_$(HOST)) $(DEBUG) -D$(HOST) -pthread
 CCOPT           := $(CCOPT) $(CCOPT_$(HOST))
 SOOPT           := $(SOOPT) $(SOOPT_$(HOST))
 
-OEXES := $(EXES:%=$(LIB)/%.o)
-BEXES := $(EXES:%=$(BIN)/%)
+OEXES  := $(EXES:%=$(LIB)/%.o)
+BEXES  := $(EXES:%=$(BIN)/%)
+ALIBS  := $(LIBS:%=$(LIB)/%.a)
+SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
 .SUFFIXES : .h .c .o .a .so
 .PHONY : all install
-.SECONDARY : $(BEXES) $(OEXES)
-
-ALIBS  := $(LIBS:%=$(LIB)/%.a)
-SOLIBS := $(LIBS:%=$(LIB)/%.so)
+.SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS)
 
 $(LIB)/%.o : %.c
 	$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
