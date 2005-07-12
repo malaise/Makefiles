@@ -45,11 +45,15 @@ $(LIB)/%.a :
 	$(AR) crvs $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 
 $(BIN)/% : $(LIB)/%.o
+	@if [ "$(LIBS_$(@F))" != "" ]; then \
+	  make $(patsubst %,$(LIB)/%,$(LIBS_$(@F))); \
+	fi
 	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(LARGS_$(@F))
 
 INSTALLED_HEADS := $(INST_HEADS:%=$(DEST_HEADS)/%)
 INSTALLED_LIBS := $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so)
 INSTALLED_EXES := $(INST_EXES:%=$(DEST_EXES)/%)
+INSTALLED := $(strip $(INSTALLED_HEADS) $(INSTALLED_LIBS) $(INSTALLED_EXES))
 
 $(DEST_HEADS)/% : %
 	/bin/cp -f $< $@
@@ -63,8 +67,13 @@ $(DEST_EXES)/% : $(BIN)/%
 	/bin/cp -f $< $@
 	/bin/chmod a+r $@
 
-all : $(DIRS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS) $(INSTALLED_LIBS) $(EXES) $(INSTALLED_EXES)
+all : $(DIRS) $(ALIBS) $(SOLIBS) $(EXES)
 	$(DO_POST)
+	@if [ "$(INSTALLED)" != "" ]; then \
+	  make install; \
+	fi
+
+install : $(INSTALLED)
 
 include $(TEMPLATES)/post.mk
 
