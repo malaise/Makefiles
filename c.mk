@@ -26,7 +26,7 @@ SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
 .SUFFIXES : .h .c .o .a .so
 .PHONY : all install
-.SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS)
+.SECONDARY : $(BEXES) $(OEXES)
 
 $(LIB)/%.o : %.c
 	$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
