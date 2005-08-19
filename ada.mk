@@ -2,7 +2,7 @@ ifdef ADAVIEW
 GNATMAKEFLAG   := $(patsubst %,-aI%,$(ADAVIEW)) $(patsubst %,-aO%/$(LIB),$(ADAVIEW))
 GNATHTMLFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 endif
-GNATMAKEFLAG   := $(GNATMAKEFLAG)
+GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
 GNATHTMLOPT    ?= -d
 
