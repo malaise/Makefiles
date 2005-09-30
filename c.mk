@@ -4,13 +4,12 @@ CCOPT_OSF1      := -O -std1 -warnprotos
 SOOPT_OSF1      := -all
 
 CC_Linux        := gcc
-#STRONGWARN      := -Wconversion
-STRONGWARN      := -Werror
-CCOPT_Linux     := $(STRONGWARN) -pedantic -Wall -W -Wpointer-arith \
+CCOPT_Linux     ?= -pedantic -Wall -W -Wpointer-arith \
 	-Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings \
 	-Wsign-compare -Wstrict-prototypes -Wmissing-prototypes  \
 	-Wmissing-declarations -Wmissing-noreturn -Wunreachable-code -Winline \
-	-Wfloat-equal -Wundef -Wendif-labels
+	-Wfloat-equal -Wundef
+CCOPT_Linux     += -Werror
 
 LD              := ld
 
