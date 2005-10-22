@@ -6,8 +6,9 @@ GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
 GNATHTMLOPT    ?= -d
 
-GNATHTML       := gnathtml $(GNATHTMLFLAG)
-GNATMAKE       := gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
+GNATPATH       := /usr/local/gnat/bin
+GNATHTML       := $(GNATPATH)/gnathtml $(GNATHTMLFLAG)
+GNATMAKE       := $(GNATPATH)/gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
