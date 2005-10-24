@@ -1,4 +1,6 @@
-.PHONY : afpx clean_afpx clean clean_exe clean_all new scratch html clean_html
+CLEAN_EXES := $(EXES:%=clean_%)
+.PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
+         scratch html clean_html
 
 # Sub dirs
 $(BIN) :
@@ -41,6 +43,12 @@ clean :
 clean_exe :
 	$(RM) -r $(BIN)
 	$(RM) $(EXES)
+
+$(CLEAN_EXES) :
+	@$(RM) $(LIB)/$(@:clean_%=%).o $(BIN)/$(@:clean_%=%) $(@:clean_%=%) 
+	@if [ -f $(LIB)/$(@:clean_%=%).ali ] ; then \
+	  $(RM)  $(LIB)/$(@:clean_%=%).ali; \
+	fi
 
 clean_all : clean clean_exe clean_afpx
 
