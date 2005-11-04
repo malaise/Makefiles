@@ -16,6 +16,7 @@ LD              := ld
 CFLAGS_Linux    := -pipe
 
 SOOPT_Linux     := 
+CDEP            := cdep.mk
 
 CC              := $(CC_$(HOST))
 DEBUG           := 
@@ -78,6 +79,34 @@ all : $(DIRS) $(ALIBS) $(SOLIBS) $(EXES)
 	fi
 
 install : $(INSTALLED)
+
+# Extract #include "<file>.h" directives of all .c and .h
+# Add local dependancies in $(CDEP)
+dep :
+	@$(RM) $(CDEP)
+	@$(TOUCH) $(CDEP)
+	@hlist="`ls *.h 2> /dev/null`"; \
+	if [ -z "$$hlist" ] ; then \
+	  exit 0; \
+	fi; \
+	for file in `ls *.[ch]` ; do \
+	  list=`awk -v LIST="$$hlist" ' \
+	    BEGIN { \
+	      NLIST=split(LIST, HLIST, " ") \
+	    } \
+	    ( ($$1 == "#include") && ($$2 ~ "\".+\\.h\"") ) { \
+	      INCL = substr ($$2, 2, length($$2)-2); \
+	      for (I = 1; I <= NLIST; I++) { \
+	        if (INCL == HLIST[I]) { \
+	          printf " " INCL; \
+	          next \
+	        } \
+	      } \
+	    }' $$file` ; \
+	  if [ ! -z "$$list" ] ; then \
+	    echo "$$file :$$list" >> $(CDEP); \
+	  fi \
+	done \
 
 include $(TEMPLATES)/post.mk
 

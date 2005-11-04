@@ -65,3 +65,8 @@ html : clean_html
 clean_html :
 	$(RM) -r html
 
+# Include any local makefile
+MAKEFILES := $(wildcard *.mk)
+ifneq ($(MAKEFILES),)
+include $(MAKEFILES)
+endif
