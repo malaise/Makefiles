@@ -30,28 +30,29 @@ ALIBS  := $(LIBS:%=$(LIB)/%.a)
 SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
 .SUFFIXES : .h .c .o .a .so
-.PHONY : all install
+.PHONY : all install cdep dep
 .SECONDARY : $(BEXES) $(OEXES)
 
 $(LIB)/%.o : %.c
-	$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
+	@echo "CC $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
+	@$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
 
 $(LIB)/%.so :
 	@if [ "$(OBJS_$(@F:%.so=%))" != "" ]; then \
-	  make $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))); \
+	  $(MAKE) $(NOPRTDIR) -s $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))); \
 	fi
 	$(LD) -shared $(SOOPT) -o $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))) -lc
 	-$(RM) so_locations
 
 $(LIB)/%.a :
 	@if [ "$(OBJS_$(@F:%.a=%))" != "" ]; then \
-	  make $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%))); \
+	  $(MAKE) $(NOPRTDIR) -s $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%))); \
 	fi
-	$(AR) crvs $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
+	$(AR) crs $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 
 $(BIN)/% : $(LIB)/%.o
 	@if [ "$(LIBS_$(@F))" != "" ]; then \
-	  make $(patsubst %,$(LIB)/%,$(LIBS_$(@F))); \
+	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%,$(LIBS_$(@F))); \
 	fi
 	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(LARGS_$(@F))
 
@@ -75,14 +76,14 @@ $(DEST_EXES)/% : $(BIN)/%
 all : $(DIRS) $(ALIBS) $(SOLIBS) $(EXES)
 	$(DO_POST)
 	@if [ "$(INSTALLED)" != "" ]; then \
-	  make install; \
+	  $(MAKE) $(NOPRTDIR) install; \
 	fi
 
 install : $(INSTALLED)
 
 # Extract #include "<file>.h" directives of all .c and .h
 # Add local dependancies in $(CDEP)
-dep :
+cdep dep :
 	@$(RM) $(CDEP)
 	@$(TOUCH) $(CDEP)
 	@hlist="`ls *.h 2> /dev/null`"; \
@@ -94,7 +95,7 @@ dep :
 	    BEGIN { \
 	      NLIST=split(LIST, HLIST, " ") \
 	    } \
-	    ( ($$1 == "#include") && ($$2 ~ "\".+\\.h\"") ) { \
+	    ( ($$1 == "#include") && ($$2 ~ "\".+\\\.h\"") ) { \
 	      INCL = substr ($$2, 2, length($$2)-2); \
 	      for (I = 1; I <= NLIST; I++) { \
 	        if (INCL == HLIST[I]) { \

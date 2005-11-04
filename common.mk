@@ -10,5 +10,7 @@ LIB             := lib_$(HOST)
 BIN             := bin_$(HOST)
 DIRS            := $(LIB) $(BIN)
 
+NOPRTDIR        := --no-print-directory
+
 include $(TEMPLATES)/path.mk
 

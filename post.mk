@@ -53,10 +53,10 @@ $(CLEAN_EXES) :
 clean_all : clean clean_exe clean_afpx
 
 new : clean_exe
-	@$(MAKE)
+	@$(MAKE)  $(NOPRTDIR)
 
 scratch : clean_all
-	@$(MAKE)
+	@$(MAKE)  $(NOPRTDIR)
 
 # Html stuff
 html : clean_html
