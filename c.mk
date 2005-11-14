@@ -31,7 +31,7 @@ SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
 .SUFFIXES : .h .c .o .a .so
 .PHONY : all install cdep dep
-.SECONDARY : $(BEXES) $(OEXES)
+.SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS)
 
 $(LIB)/%.o : %.c
 	@echo "CC $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
@@ -73,10 +73,16 @@ $(DEST_EXES)/% : $(BIN)/%
 	/bin/cp -f $< $@
 	/bin/chmod a+r $@
 
-all : $(DIRS) $(ALIBS) $(SOLIBS) $(EXES)
+all : $(DIRS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS)
+	@if [ "$(INSTALLED_LIBS)" != "" ]; then \
+	  $(MAKE) $(NOPRTDIR) $(INSTALLED_LIBS); \
+	fi
+	@if [ "$(EXES)" != "" ]; then \
+	  $(MAKE) $(NOPRTDIR) $(EXES); \
+	fi
 	$(DO_POST)
-	@if [ "$(INSTALLED)" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) install; \
+	@if [ "$(INSTALLED_EXES)" != "" ]; then \
+	  $(MAKE) $(NOPRTDIR) $(INSTALLED_EXES); \
 	fi
 
 install : $(INSTALLED)
