@@ -56,9 +56,9 @@ $(BIN)/% : $(LIB)/%.o
 	fi
 	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(LARGS_$(@F))
 
-INSTALLED_HEADS := $(INST_HEADS:%=$(DEST_HEADS)/%)
-INSTALLED_LIBS := $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so)
-INSTALLED_EXES := $(INST_EXES:%=$(DEST_EXES)/%)
+INSTALLED_HEADS := $(strip $(INST_HEADS:%=$(DEST_HEADS)/%))
+INSTALLED_LIBS := $(strip $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so))
+INSTALLED_EXES := $(strip $(INST_EXES:%=$(DEST_EXES)/%))
 INSTALLED := $(strip $(INSTALLED_HEADS) $(INSTALLED_LIBS) $(INSTALLED_EXES))
 
 $(DEST_HEADS)/% : %
@@ -74,13 +74,14 @@ $(DEST_EXES)/% : $(BIN)/%
 	/bin/chmod a+r $@
 
 all : $(DIRS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS)
+	$(POST_LIBS)
 	@if [ "$(INSTALLED_LIBS)" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(INSTALLED_LIBS); \
 	fi
 	@if [ "$(EXES)" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(EXES); \
 	fi
-	$(DO_POST)
+	$(POST_EXES)
 	@if [ "$(INSTALLED_EXES)" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(INSTALLED_EXES); \
 	fi
