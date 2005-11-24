@@ -1,13 +1,16 @@
 ifdef ADAVIEW
 GNATMAKEFLAG   := $(patsubst %,-aI%,$(ADAVIEW)) $(patsubst %,-aO%/$(LIB),$(ADAVIEW))
 GNATHTMLFLAG   := $(patsubst %,-I%,$(ADAVIEW))
+GNATSTUBFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 endif
 GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
+GNATSTUBFLAG   := $(GNATSTUBFLAG) -gnaty2 -q
 GNATHTMLOPT    ?= -d
 
 GNATHTML       := $(GNATPATH)/gnathtml.pl $(GNATHTMLFLAG)
 GNATMAKE       := $(GNATPATH)/gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
+GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
@@ -72,4 +75,58 @@ libs : $(LIB)
 else
 libs :;
 endif
+
+# Make a stub of body from spec
+%.adb : %.ads
+	@if [ ! -f $@ ] ; then \
+	  echo "gnatstub $<"; \
+	  PATH=$(GNATPATH):$(PATH); \
+	  $(GNATSTUB) $<; \
+	  if [ ! -f $@ ] ; then \
+	    exit; \
+	  fi; \
+	  grep -v "\-\-" $@ > $@.tmp; \
+	  type substit > /dev/null; \
+	  if [ $$? -eq 0 ] ; then \
+	    substit "\n\n\n" "\n\n" $@.tmp  > /dev/null; \
+	  fi; \
+	  awk ' \
+	    BEGIN { \
+	      IN_PROC = 0; \
+	    } \
+	    ( (IN_PROC == 0) && (NF == 2) \
+	      && ( ($$1 == "procedure") || ($$1 == "function") ) ) { \
+	      TABS = ""; for (I = 0; I <= length($$0); I++) TABS = TABS " "; \
+	      PREV = $$0; \
+	      IN_PROC = 1; \
+	      next; \
+	    } \
+	    (IN_PROC != 0) { \
+	      gsub ("^ *", ""); \
+	      if ($$1 == "is") { \
+	        print PREV " " $$0; \
+	        IN_PROC = 0; \
+	        next; \
+	      } \
+	      if (IN_PROC == 1) { \
+	        PREV = PREV " " $$0; \
+	        IN_PROC = 2; \
+	        next; \
+	      } else { \
+	        print PREV; \
+	        PREV = TABS " " $$0; \
+	        next; \
+	      } \
+	    } \
+	    { \
+	      print; \
+	    } \
+	    END { \
+	      print ""; \
+	    } \
+	  ' <$@.tmp >$@; \
+	  rm $@.tmp; \
+	else \
+	  $(TOUCH) $@; \
+	fi
 
