@@ -83,12 +83,15 @@ endif
 	  PATH=$(GNATPATH):$(PATH); \
 	  $(GNATSTUB) $<; \
 	  if [ ! -f $@ ] ; then \
-	    exit; \
+	    echo "Error: Gnatsub failed."; \
+	    exit 1; \
 	  fi; \
-	  grep -v "\-\-" $@ > $@.tmp; \
-	  type substit > /dev/null; \
+	  cp $@ $@.tmp; \
+	  type asubst > /dev/null 2>&1; \
 	  if [ $$? -eq 0 ] ; then \
-	    substit "\n\n\n" "\n\n" $@.tmp  > /dev/null; \
+	    asubst "\n(  )*--.*\n(  )*--.*\n(  )*--.*\n" "" $@.tmp  > /dev/null; \
+	  else \
+	    echo "Warning: asubst not found, partial processing."; \
 	  fi; \
 	  awk ' \
 	    BEGIN { \
