@@ -89,7 +89,7 @@ endif
 	  cp $@ $@.tmp; \
 	  type asubst > /dev/null 2>&1; \
 	  if [ $$? -eq 0 ] ; then \
-	    asubst "\n(  )*--.*\n(  )*--.*\n(  )*--.*\n" "" $@.tmp  > /dev/null; \
+	    asubst "^(  )*--.*\n(  )*--.*\n(  )*--.*\n\n" "\03\n" $@.tmp  > /dev/null; \
 	  else \
 	    echo "Warning: asubst not found, partial processing."; \
 	  fi; \
