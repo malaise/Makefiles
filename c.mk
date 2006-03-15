@@ -30,7 +30,7 @@ ALIBS  := $(LIBS:%=$(LIB)/%.a)
 SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
 .SUFFIXES : .h .c .o .a .so
-.PHONY : all install cdep dep clean_dep
+.PHONY : all install cdep dep clean_cdep clean_dep
 .SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS)
 
 $(LIB)/%.o : %.c
@@ -116,7 +116,7 @@ cdep dep :
 	  fi \
 	done \
 
-clean_dep :
+clean_cdep clean_dep :
 	@$(RM) $(CDEP)
 
 include $(TEMPLATES)/post.mk

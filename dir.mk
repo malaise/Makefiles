@@ -1,4 +1,4 @@
-TARGETS := all afpx clean clean_exe clean_afpx clean_all cdep dep clean_dep html clean_html
+TARGETS := all afpx clean clean_exe clean_afpx clean_all cdep dep clean_cdep clean_dep html clean_html
 .PHONY : $(SUBDIRS) $(TARGETS)
 
 $(TARGETS) :

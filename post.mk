@@ -65,7 +65,7 @@ html : clean_html
 clean_html :
 	$(RM) -r html
 
-# Include any local makefile: cdep...
+# Include any local makefile: cdep.mk...
 MAKEFILES := $(wildcard *.mk)
 ifneq ($(MAKEFILES),)
 include $(MAKEFILES)
