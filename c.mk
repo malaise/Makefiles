@@ -33,6 +33,30 @@ SOLIBS := $(LIBS:%=$(LIB)/%.so)
 .PHONY : all install cdep dep clean_cdep clean_dep
 .SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS)
 
+all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS)
+	$(POST_LIBS)
+	@if [ "$(INSTALLED_LIBS)" != "" ]; then \
+	  $(MAKE) $(NOPRTDIR) $(INSTALLED_LIBS); \
+	fi
+	@if [ "$(EXES)" != "" ]; then \
+	  $(MAKE) $(NOPRTDIR) $(EXES); \
+	fi
+	$(POST_EXES)
+	@if [ "$(INSTALLED_EXES)" != "" ]; then \
+	  $(MAKE) $(NOPRTDIR) $(INSTALLED_EXES); \
+	fi
+
+ifdef LINKFROM
+LINKS := $(FILES2LINK)
+FILES4LINK := $(FILES2LINK:%=$(LINKFROM)/%)
+
+$(LINKS) :
+	$(LN) $(FILES4LINK) .
+else
+$(LINKS) :
+
+endif
+
 $(LIB)/%.o : %.c
 	@echo "CC $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
 	@$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
@@ -72,19 +96,6 @@ $(DEST_LIBS)/% : $(LIB)/%
 $(DEST_EXES)/% : $(BIN)/%
 	/bin/cp -f $< $@
 	/bin/chmod a+r $@
-
-all : $(DIRS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS)
-	$(POST_LIBS)
-	@if [ "$(INSTALLED_LIBS)" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) $(INSTALLED_LIBS); \
-	fi
-	@if [ "$(EXES)" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) $(EXES); \
-	fi
-	$(POST_EXES)
-	@if [ "$(INSTALLED_EXES)" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) $(INSTALLED_EXES); \
-	fi
 
 install : $(INSTALLED)
 
