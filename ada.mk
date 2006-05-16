@@ -82,53 +82,20 @@ endif
 	  echo "gnatstub $<"; \
 	  PATH=$(GNATPATH):$(PATH); \
 	  $(GNATSTUB) $<; \
-	  if [ ! -f $@ ] ; then \
-	    echo "Error: Gnatsub failed."; \
+	  if [ $$? -ne 0 ] ; then \
 	    exit 1; \
 	  fi; \
-	  cp $@ $@.tmp; \
-	  type asubst > /dev/null 2>&1; \
-	  if [ $$? -eq 0 ] ; then \
-	    asubst -q "^(  )*--.*\n(  )*--.*\n(  )*--.*\n\n" "\R03\n" $@.tmp; \
-	  else \
-	    echo "Warning: asubst not found, partial processing."; \
+	  if [ ! -f $@ ] ; then \
+	    exit 0; \
 	  fi; \
-	  awk ' \
-	    BEGIN { \
-	      IN_PROC = 0; \
-	    } \
-	    ( (IN_PROC == 0) && (NF == 2) \
-	      && ( ($$1 == "procedure") || ($$1 == "function") ) ) { \
-	      TABS = ""; for (I = 0; I <= length($$0); I++) TABS = TABS " "; \
-	      PREV = $$0; \
-	      IN_PROC = 1; \
-	      next; \
-	    } \
-	    (IN_PROC != 0) { \
-	      gsub ("^ *", ""); \
-	      if ($$1 == "is") { \
-	        print PREV " " $$0; \
-	        IN_PROC = 0; \
-	        next; \
-	      } \
-	      if (IN_PROC == 1) { \
-	        PREV = PREV " " $$0; \
-	        IN_PROC = 2; \
-	        next; \
-	      } else { \
-	        print PREV; \
-	        PREV = TABS " " $$0; \
-	        next; \
-	      } \
-	    } \
-	    { \
-	      print; \
-	    } \
-	    END { \
-	      print ""; \
-	    } \
-	  ' <$@.tmp >$@; \
-	  rm $@.tmp; \
+	  type astub > /dev/null 2>&1; \
+	  if [ $$? -eq 0 ] ; then \
+      rm -rf $@; \
+	    echo "astub $<"; \
+	    astub $<; \
+	  else \
+	    echo "Warning: astub not found, keeping gnatsub result."; \
+	  fi; \
 	else \
 	  $(TOUCH) $@; \
 	fi
