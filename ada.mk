@@ -3,7 +3,7 @@ GNATMAKEFLAG   := $(patsubst %,-aI%,$(ADAVIEW)) $(patsubst %,-aO%/$(LIB),$(ADAVI
 GNATHTMLFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 GNATSTUBFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 endif
-GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato
+GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -gnatE -fstack-check
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
 GNATSTUBFLAG   := $(GNATSTUBFLAG) -gnaty2 -q
 GNATHTMLOPT    ?= -d
