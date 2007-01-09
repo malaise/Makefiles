@@ -90,7 +90,7 @@ endif
 	  fi; \
 	  type astub > /dev/null 2>&1; \
 	  if [ $$? -eq 0 ] ; then \
-      rm -rf $@; \
+	    rm -rf $@; \
 	    echo "astub $<"; \
 	    astub $<; \
 	  else \
