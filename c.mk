@@ -19,7 +19,6 @@ SOOPT_Linux     :=
 CDEP            := cdep.mk
 
 CC              := $(CC_$(HOST))
-DEBUG           := 
 CFLAGS          := $(CFLAGS) $(CFLAGS_$(HOST)) $(DEBUG) -D$(HOST) -pthread
 CCOPT           := $(CCOPT) $(CCOPT_$(HOST))
 SOOPT           := $(SOOPT) $(SOOPT_$(HOST))
@@ -78,7 +77,7 @@ $(BIN)/% : $(LIB)/%.o
 	@if [ "$(LIBS_$(@F))" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%,$(LIBS_$(@F))); \
 	fi
-	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(LARGS_$(@F))
+	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) -L$(LIB) $(LARGS_$(@F))
 
 INSTALLED_HEADS := $(strip $(INST_HEADS:%=$(DEST_HEADS)/%))
 INSTALLED_LIBS := $(strip $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so))
