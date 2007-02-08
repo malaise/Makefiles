@@ -23,6 +23,9 @@ CFLAGS          := $(CFLAGS) $(CFLAGS_$(HOST)) $(DEBUG) -D$(HOST) -pthread
 CCOPT           := $(CCOPT) $(CCOPT_$(HOST))
 SOOPT           := $(SOOPT) $(SOOPT_$(HOST))
 
+DINCLD := $(DINCL:%=-I../%) $(DLIBA:%=-I../%)
+DLIBAD := $(foreach dir,$(DLIBA),../$(dir)/$(LIB)/lib$(dir).a)
+
 OEXES  := $(EXES:%=$(LIB)/%.o)
 BEXES  := $(EXES:%=$(BIN)/%)
 ALIBS  := $(LIBS:%=$(LIB)/%.a)
@@ -57,8 +60,8 @@ $(LINKS) :
 endif
 
 $(LIB)/%.o : %.c
-	@echo "CC $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
-	@$(CC) $(CCOPT) $(CFLAGS) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
+	@echo "CC $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
+	@$(CC) $(CCOPT) $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
 
 $(LIB)/%.so :
 	@if [ "$(OBJS_$(@F:%.so=%))" != "" ]; then \
@@ -77,7 +80,7 @@ $(BIN)/% : $(LIB)/%.o
 	@if [ "$(LIBS_$(@F))" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%,$(LIBS_$(@F))); \
 	fi
-	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) -L$(LIB) $(LARGS_$(@F))
+	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm
 
 INSTALLED_HEADS := $(strip $(INST_HEADS:%=$(DEST_HEADS)/%))
 INSTALLED_LIBS := $(strip $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so))
