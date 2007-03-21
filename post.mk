@@ -23,7 +23,7 @@ ifeq ($(AFPX),true)
 AFPX_FILES := AFPX.DSC AFPX.FLD AFPX.INI
 afpx : $(AFPX_FILES)
 
-$(AFPX_FILES) :: AFPX.LIS
+$(AFPX_FILES) : Afpx.xml
 	afpx_bld
 
 clean_afpx :
