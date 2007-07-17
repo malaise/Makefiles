@@ -14,3 +14,9 @@ NOPRTDIR        := --no-print-directory
 
 include $(TEMPLATES)/path.mk
 
+
+ifdef CPATH
+CPATHD          := $(CPATH:%=%/$(LIB))
+CPATHL          := $(CPATHD:%=-L%)
+endif
+

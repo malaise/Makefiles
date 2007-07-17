@@ -15,10 +15,6 @@ ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
 
-ifdef CPATH
-CPATH          := $(CPATH:%=-L%/$(LIB))
-endif
-
 include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
@@ -49,8 +45,8 @@ $(BIN)/% : $(DIRS) %.adb
 	  $(GARGS_$(@F)) $(GARGS) \
 	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -shared \
-	  -largs $(CPATH) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
-                          $(LARGS_$(@F)) $(LARGS)
+	  -largs $(CPATHL) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
+                           $(LARGS_$(@F)) $(LARGS)
 
 # Make ali in LIB
 alis : $(LIB)
