@@ -2,28 +2,26 @@ ifdef ADAVIEW
 GNATMAKEFLAG   := $(patsubst %,-aI%,$(ADAVIEW)) $(patsubst %,-aO%/$(LIB),$(ADAVIEW))
 GNATHTMLFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 GNATSTUBFLAG   := $(patsubst %,-I%,$(ADAVIEW))
-GNATLSFLAG     := $(patsubst %,-aI%,$(ADAVIEW)) $(patsubst %,-aO%/$(LIB),$(ADAVIEW))
 endif
 
 GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -gnatE -fstack-check
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
 GNATSTUBFLAG   := $(GNATSTUBFLAG) -gnaty2 -q
-GNATLSFLAG     := -I$(LIB) $(GNATLSFLAG)
 GNATHTMLOPT    ?= -d
 
 GNATHTML       := $(GNATPATH)/gnathtml.pl $(GNATHTMLFLAG)
 GNATMAKE       := $(GNATPATH)/gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
 GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
-GNATLS         := $(GNATPATH)/gnatls $(GNATLSFLAG)
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
+LSDEPARGS      ?= -v $(LIBS) $(EXES)
 
 include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
 .SUFFIXES : .ads .adb .o .ali .stat
-.PHONY : all alis libs afpx ls
+.PHONY : all alis libs afpx lsdep
 .SECONDARY : $(BEXES)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb
@@ -103,15 +101,9 @@ endif
 lsdep :
 	@type alsdep > /dev/null 2>&1; \
 	if [ $$? -ne 0 ] ; then \
-	  echo "Error: adep not found."; \
+	  echo "Error: alsdep not found."; \
 	else \
 	  export ADAVIEW="$(ADAVIEW)"; \
-	  export GNATLS="$(GNATLS)"; \
-	  export LIB="$(LIB)"; \
-	  if [ "$(OF)" != "" ] ; then \
-	    alsdep "$(OF)"; \
-	  else \
-	    alsdep $(LIBS) $(EXES); \
-	  fi; \
+	  alsdep $(LSDEPARGS); \
 	fi
 
