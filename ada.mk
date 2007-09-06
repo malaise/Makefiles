@@ -15,7 +15,8 @@ GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
-LSDEPARGS      ?= -v $(LIBS) $(EXES)
+OF             ?= $(LIBS) $(EXES)
+LSDEPARGS      := -v $(OF)
 
 include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
@@ -106,4 +107,7 @@ lsdep :
 	  export ADAVIEW="$(ADAVIEW)"; \
 	  alsdep $(LSDEPARGS); \
 	fi
+
+echoadaview :
+	@echo $(ADAVIEW)
 
