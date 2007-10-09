@@ -35,6 +35,16 @@ SOLIBS := $(LIBS:%=$(LIB)/%.so)
 .PHONY : all install cdep dep clean_cdep clean_dep
 .SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS)
 
+ifdef LINKFROM
+LINKS := $(FILES2LINK)
+FILES4LINK := $(FILES2LINK:%=$(LINKFROM)/%)
+
+$(LINKS) :
+	$(LN) $(FILES4LINK) .
+else
+$(LINKS) :
+endif
+
 all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS)
 	$(POST_LIBS)
 	@if [ "$(INSTALLED_LIBS)" != "" ]; then \
@@ -47,17 +57,6 @@ all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS)
 	@if [ "$(INSTALLED_EXES)" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(INSTALLED_EXES); \
 	fi
-
-ifdef LINKFROM
-LINKS := $(FILES2LINK)
-FILES4LINK := $(FILES2LINK:%=$(LINKFROM)/%)
-
-$(LINKS) :
-	$(LN) $(FILES4LINK) .
-else
-$(LINKS) :
-
-endif
 
 $(LIB)/%.o : %.c
 	@echo "CC $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
