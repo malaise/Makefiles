@@ -39,6 +39,9 @@ endif
 clean :
 	$(RM) -r $(LIB)
 	@$(RM) b~*
+ifdef LINKFROM
+	$(RM) $(FILES2LINK)
+endif
 
 clean_exe :
 	$(RM) -r $(BIN)
