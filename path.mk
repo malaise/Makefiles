@@ -1,4 +1,6 @@
-CPATH     := $(HOME)/ada/c
-REPOSIT   := $(HOME)/ada/reposit
+ADAPATH   := $(HOME)/ada
+CPATH     := $(ADAPATH)/c
+REPOSIT   := $(ADAPATH)/reposit
+USR       := $(ADAPATH)/usr
 GNATPATH  := /usr/local/gnat/bin
 
