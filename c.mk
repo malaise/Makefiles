@@ -40,8 +40,11 @@ LINKS := $(FILES2LINK)
 FILES4LINK := $(FILES2LINK:%=$(LINKFROM)/%)
 endif
 
-all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS) $(INSTALLED_HEADS)
+all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS)
 	$(POST_LIBS)
+	@if [ "$(INSTALLED_HEADS)" != "" ]; then \
+	  $(MAKE) $(NOPRTDIR) $(INSTALLED_HEADS); \
+	fi
 	@if [ "$(INSTALLED_LIBS)" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(INSTALLED_LIBS); \
 	fi
