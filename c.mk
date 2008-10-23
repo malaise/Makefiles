@@ -1,3 +1,8 @@
+# If DEBUG is set, define it to '-g -DDEBUG'
+ifneq ($(origin CDEBUG), undefined)
+  CDEBUG = -g -DDEBUG
+endif
+
 CC_OSF1         := cc
 CCOPT_OSF1      := -O -std1 -warnprotos
 
@@ -19,7 +24,7 @@ SOOPT_Linux     :=
 CDEP            := cdep.mk
 
 CC              := $(CC_$(HOST))
-CFLAGS          := $(CFLAGS) $(CFLAGS_$(HOST)) $(DEBUG) -D$(HOST) -pthread
+CFLAGS          := $(CFLAGS) $(CFLAGS_$(HOST)) $(CDEBUG) -D$(HOST) -pthread
 CCOPT           := $(CCOPT) $(CCOPT_$(HOST))
 SOOPT           := $(SOOPT) $(SOOPT_$(HOST))
 
