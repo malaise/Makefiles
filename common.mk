@@ -1,10 +1,13 @@
 HOST            := $(shell uname -s)
 TEMPLATES       := $(HOME)/Makefiles
 
-RM              := rm -f
-LN              := ln -fs
-TOUCH           := touch
-MKDIR           := mkdir -p
+RM              := /bin/rm -f
+CP              := /bin/cp -pPf
+LN              := /bin/ln -fs
+TOUCH           := /bin/touch
+MKDIR           := /bin/mkdir -p
+CHMOD_AR        := /bin/chmod a+r
+CHMOD_ARX       := /bin/chmod a+rx
 
 LIB             := lib_$(HOST)
 BIN             := bin_$(HOST)

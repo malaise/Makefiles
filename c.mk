@@ -97,16 +97,20 @@ INSTALLED_EXES := $(strip $(INST_EXES:%=$(DEST_EXES)/%))
 INSTALLED := $(strip $(INSTALLED_HEADS) $(INSTALLED_LIBS) $(INSTALLED_EXES))
 
 $(DEST_HEADS)/% : %
-	/bin/cp -f $< $@
-	/bin/chmod a+r $@
+	$(CP) $< $@
+	$(CHMOD_AR) $@
 
-$(DEST_LIBS)/% : $(LIB)/%
-	/bin/cp -f $< $@
-	/bin/chmod a+r $@
+$(DEST_LIBS)/%.so : $(LIB)/%.so
+	$(CP) $< $@
+	$(CHMOD_ARX) $@
+
+$(DEST_LIBS)/%.a : $(LIB)/%.a
+	$(CP) $< $@
+	$(CHMOD_AR) $@
 
 $(DEST_EXES)/% : $(BIN)/%
-	/bin/cp -f $< $@
-	/bin/chmod a+r $@
+	$(CP) $< $@
+	$(CHMOD_ARX) $@
 
 install : $(INSTALLED)
 
