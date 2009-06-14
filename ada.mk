@@ -21,6 +21,21 @@ CARGS          := $(CARGS) -pipe
 OF             ?= $(LIBS) $(EXES)
 LSDEPARGS      := -v $(OF)
 
+ADA_FILTER     := | awk -v ADAOPT=$(ADAOPT) ' \
+  function strip(file,suff) {gsub(suff,"",file); return file} \
+  ($$0 == "gnatmake: objects up to date.") {next} \
+	($$1 == "gcc" && $$2 == "-c" ) { \
+    printf "ADA %s %s\n",ADAOPT,strip($$NF,"\\.\\./"); next \
+  } \
+	($$1 == "gnatbind") {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
+	($$1 == "gnatlink") { \
+    if ($$3 == "-shared-libgcc") {printf "LINK_SHARED %s\n",strip($$2,"\\.ali")} \
+    else {printf "LINK_STATIC %s\n",strip($$2,"\\.ali")} \
+    next \
+  } \
+  {print} \
+'
+
 include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
@@ -30,7 +45,7 @@ BEXES := $(EXES:%=$(BIN)/%)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
-	$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS)
+	@$(ADA) -eS ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
 all : $(DIRS) alis libs $(EXES) afpx
 
@@ -39,20 +54,20 @@ include $(TEMPLATES)/post.mk
 # Static and dynamic exe
 $(BIN)/%.stat : $(DIRS) %.adb
 	@cd $(LIB); \
-	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$@ \
+	$(GNATMAKE) -eS ../$(@F:%.stat=%) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
 	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -static \
-	  -largs $(LARGS_$(@F)) $(LARGS) -lm
+	  -largs $(LARGS_$(@F)) $(LARGS) -lm $(ADA_FILTER)
 
 $(BIN)/% : $(DIRS) %.adb
 	@cd $(LIB); \
-	$(GNATMAKE) ../$(@F) -o ../$@ \
+	$(GNATMAKE) -eS ../$(@F) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
 	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -shared \
 	  -largs $(CPATHL) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
-                           $(LARGS_$(@F)) $(LARGS)
+                           $(LARGS_$(@F)) $(LARGS) $(ADA_FILTER)
 
 # Make ali in LIB
 alis : $(LIB)
@@ -68,9 +83,9 @@ libs : $(LIB)
 	@cd $(LIB); \
 	for file in $(LIBS); do \
 	  if [ -f ../$$file.adb ] ; then \
-	    $(ADA) ../$$file.adb $(GARGS) -cargs $(CARGS); \
+	    $(ADA) -eS ../$$file.adb $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
 	  else \
-	    $(ADA) ../$$file.ads $(GARGS) -cargs $(CARGS); \
+	    $(ADA) -eS ../$$file.ads $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
 	  fi; \
 	done; \
 	exit 0
