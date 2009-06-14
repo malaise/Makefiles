@@ -3,6 +3,9 @@ GNATMAKEFLAG   := $(patsubst %,-aI%,$(ADAVIEW)) $(patsubst %,-aO%/$(LIB),$(ADAVI
 GNATHTMLFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 GNATSTUBFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 endif
+ifeq ($(ADAWARN),true)
+ADAFLAG        := $(ADAFLAG) -gnatwa
+endif
 
 GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -fstack-check
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
