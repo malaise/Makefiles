@@ -21,19 +21,22 @@ CARGS          := $(CARGS) -pipe
 OF             ?= $(LIBS) $(EXES)
 LSDEPARGS      := -v $(OF)
 
-ADA_FILTER     := | awk -v ADAOPT=$(ADAOPT) ' \
+ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) ' \
+  BEGIN {code=0} \
   function strip(file,suff) {gsub(suff,"",file); return file} \
-  ($$0 == "gnatmake: objects up to date.") {next} \
-	($$1 == "gcc" && $$2 == "-c" ) { \
+  ($$0 ~ /gnatmake: .+ up to date./) {next} \
+  ($$2 == "warning:") {print; next} \
+  ($$1 == "gcc" && $$2 == "-c" ) { \
     printf "ADA %s %s\n",ADAOPT,strip($$NF,"\\.\\./"); next \
   } \
-	($$1 == "gnatbind") {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
-	($$1 == "gnatlink") { \
-    if ($$3 == "-shared-libgcc") {printf "LINK_SHARED %s\n",strip($$2,"\\.ali")} \
+  ($$1 == "gnatbind") {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
+  ($$1 == "gnatlink") { \
+    if ($$3 == "-shared-libgcc") {printf "LINK %s\n",strip($$2,"\\.ali")} \
     else {printf "LINK_STATIC %s\n",strip($$2,"\\.ali")} \
     next \
   } \
-  {print} \
+  {code=1; print} \
+  END {exit (code)} \
 '
 
 include $(TEMPLATES)/units.mk
@@ -45,7 +48,7 @@ BEXES := $(EXES:%=$(BIN)/%)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
-	@$(ADA) -eS ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
+	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
 all : $(DIRS) alis libs $(EXES) afpx
 
@@ -54,7 +57,7 @@ include $(TEMPLATES)/post.mk
 # Static and dynamic exe
 $(BIN)/%.stat : $(DIRS) %.adb
 	@cd $(LIB); \
-	$(GNATMAKE) -eS ../$(@F:%.stat=%) -o ../$@ \
+	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
 	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -static \
@@ -62,7 +65,7 @@ $(BIN)/%.stat : $(DIRS) %.adb
 
 $(BIN)/% : $(DIRS) %.adb
 	@cd $(LIB); \
-	$(GNATMAKE) -eS ../$(@F) -o ../$@ \
+	$(GNATMAKE) ../$(@F) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
 	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -shared \
@@ -81,14 +84,19 @@ alis : $(LIB)
 ifdef LIBS
 libs : $(LIB)
 	@cd $(LIB); \
-	for file in $(LIBS); do \
-	  if [ -f ../$$file.adb ] ; then \
-	    $(ADA) -eS ../$$file.adb $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
-	  else \
-	    $(ADA) -eS ../$$file.ads $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
-	  fi; \
-	done; \
-	exit 0
+  res=0; \
+  for file in $(LIBS); do \
+    if [ -f ../$$file.adb ] ; then \
+      src=$$file.adb; \
+    else \
+      src=$$file.ads; \
+    fi; \
+    $(ADA) ../$$src $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
+    if [ $$? -ne 0 ] ; then \
+      res=1; \
+    fi; \
+  done; \
+  exit $$res
 else
 libs :;
 endif
