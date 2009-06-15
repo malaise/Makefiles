@@ -4,10 +4,12 @@ CLEAN_EXES := $(EXES:%=clean_%)
 
 # Sub dirs
 $(BIN) :
-	$(MKDIR) $@
+	@echo MKDIR $@
+	@$(MKDIR) $@
 
 $(LIB) :
-	$(MKDIR) $@
+	@echo MKDIR $@
+	@$(MKDIR) $@
 
 # Local exes
 ifdef EXES
@@ -27,7 +29,8 @@ $(AFPX_FILES) : Afpx.xml
 	afpx_bld
 
 clean_afpx :
-	$(RM) $(AFPX_FILES)
+	@echo RM AFPX
+	@$(RM) $(AFPX_FILES)
 else
 afpx :;
 
@@ -37,15 +40,17 @@ endif
 
 # Clean stuff
 clean :
-	$(RM) -r $(LIB)
+	@echo RM $(LIB)
+	@$(RM) -r $(LIB)
 	@$(RM) b~*
 ifdef LINKFROM
 	$(RM) $(FILES2LINK)
 endif
 
 clean_exe :
-	$(RM) -r $(BIN)
-	$(RM) $(EXES)
+	@echo RM $(BIN) EXEs
+	@$(RM) -r $(BIN)
+	@$(RM) $(EXES)
 
 $(CLEAN_EXES) :
 	@$(RM) $(LIB)/$(@:clean_%=%).o $(BIN)/$(@:clean_%=%) $(@:clean_%=%) 
