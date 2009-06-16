@@ -26,7 +26,8 @@ AFPX_FILES := AFPX.DSC AFPX.FLD AFPX.INI
 afpx : $(AFPX_FILES)
 
 $(AFPX_FILES) : Afpx.xml
-	afpx_bld
+	@echo AFPX_BLD
+	@afpx_bld > /dev/null
 
 clean_afpx :
 	@echo RM AFPX
