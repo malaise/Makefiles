@@ -1,5 +1,5 @@
 # If DEBUG is set, define it to '-g -DDEBUG'
-ifneq ($(origin CDEBUG), undefined)
+ifneq ($(origin DEBUG), undefined)
   CDEBUG = -g -DDEBUG
 endif
 
