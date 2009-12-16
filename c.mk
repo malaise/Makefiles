@@ -9,12 +9,18 @@ CCOPT_OSF1      := -O -std1 -warnprotos
 SOOPT_OSF1      := -all
 
 CC_Linux        := gcc
+CPP_Linux       := g++
 CCOPT_Linux     ?= -pedantic -Wall -W -Wpointer-arith \
 	-Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings \
 	-Wsign-compare -Wstrict-prototypes -Wmissing-prototypes  \
 	-Wmissing-declarations -Wmissing-noreturn -Wunreachable-code -Winline \
 	-Wfloat-equal -Wundef
 CCOPT_Linux     += -Werror
+CPPOPT_Linux    ?= -pedantic -Wall -W -Wpointer-arith \
+	-Wcast-qual -Wcast-align -Wwrite-strings -Wsign-compare \
+	-Wmissing-noreturn -Wunreachable-code -Winline -Wfloat-equal -Wundef
+CPPOPT_Linux    += -Werror
+
 
 LD              := ld
 
@@ -24,8 +30,10 @@ SOOPT_Linux     :=
 CDEP            := cdep.mk
 
 CC              := $(CC_$(HOST))
+CPP             := $(CPP_$(HOST))
 CFLAGS          := $(CFLAGS) $(CFLAGS_$(HOST)) $(CDEBUG) -D$(HOST) -pthread
 CCOPT           := $(CCOPT) $(CCOPT_$(HOST))
+CPPOPT          := $(CPPOPT) $(CPPOPT_$(HOST))
 SOOPT           := $(SOOPT) $(SOOPT_$(HOST))
 
 DINCLD := $(DINCL:%=-I../%) $(DLIBA:%=-I../%)
@@ -36,7 +44,7 @@ BEXES  := $(EXES:%=$(BIN)/%)
 ALIBS  := $(LIBS:%=$(LIB)/%.a)
 SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
-.SUFFIXES : .h .c .o .a .so
+.SUFFIXES : .h .c .hpp .cpp .o .a .so
 .PHONY : all install cdep dep clean_cdep clean_dep
 .SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS)
 
@@ -72,6 +80,10 @@ $(LIB)/%.o : %.c
 	@echo "CC $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
 	@$(CC) $(CCOPT) $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
 
+$(LIB)/%.o : %.cpp
+	@echo "CPP $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@"
+	@$(CC) $(CPPOPT) $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@
+
 $(LIB)/%.so :
 	@if [ "$(OBJS_$(@F:%.so=%))" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) -s $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))); \
@@ -89,7 +101,11 @@ $(BIN)/% : $(LIB)/%.o
 	@if [ "$(LIBS_$(@F))" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%,$(LIBS_$(@F))); \
 	fi
-	$(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm
+	@if [ -f "$(@F).c" ] ; then \
+	  $(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
+	else \
+	  $(CPP) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
+	fi
 
 INSTALLED_HEADS := $(strip $(INST_HEADS:%=$(DEST_HEADS)/%))
 INSTALLED_LIBS := $(strip $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so))
@@ -114,7 +130,7 @@ $(DEST_EXES)/% : $(BIN)/%
 
 install : $(INSTALLED)
 
-# Extract #include "<file>.h" directives of all .c and .h
+# Extract #include "<file>.h" directives of all .c, .cpp, .h and .hpp
 # Add local dependancies in $(CDEP)
 cdep dep :
 	@$(RM) $(CDEP)
@@ -123,7 +139,7 @@ cdep dep :
 	if [ -z "$$hlist" ] ; then \
 	  exit 0; \
 	fi; \
-	for file in `ls *.[ch]` ; do \
+	for file in `ls *.c *.cpp *.h *.hpp` ; do \
 	  list=`awk -v LIST="$$hlist" ' \
 	    BEGIN { \
 	      NLIST=split(LIST, HLIST, " ") \
