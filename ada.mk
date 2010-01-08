@@ -43,7 +43,7 @@ include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
 .SUFFIXES : .ads .adb .o .ali .stat
-.PHONY : all alis libs afpx lsdep
+.PHONY : all alis libs afpx lsdep echoadaview
 .SECONDARY : $(BEXES)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb

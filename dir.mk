@@ -1,4 +1,4 @@
-TARGETS := all afpx clean clean_exe clean_afpx clean_all scratch cdep dep clean_cdep clean_dep html clean_html
+TARGETS := all afpx lsdep echoadaview clean clean_exe clean_afpx clean_all new scratch install cdep dep clean_cdep clean_dep html clean_html
 .PHONY : $(SUBDIRS) $(TARGETS)
 
 $(TARGETS) :
