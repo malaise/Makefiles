@@ -24,7 +24,7 @@ CPPOPT_Linux    += -Werror
 
 LD              := ld
 
-CFLAGS_Linux    := -pipe
+CFLAGS_Linux    := -pipe -fPIC
 
 SOOPT_Linux     := 
 CDEP            := cdep.mk
