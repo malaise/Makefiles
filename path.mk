@@ -1,4 +1,4 @@
-ADAPATH   := $(HOME)/ada
+ADAPATH   ?= $(HOME)/ada
 CPATH     := $(ADAPATH)/c
 REPOSIT   := $(ADAPATH)/reposit
 USR       := $(ADAPATH)/usr
