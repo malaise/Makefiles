@@ -8,6 +8,8 @@ TOUCH           := /bin/touch
 MKDIR           := /bin/mkdir -p
 CHMOD_AR        := /bin/chmod a+r
 CHMOD_ARX       := /bin/chmod a+rx
+ECHO            := /bin/echo
+SED             := /bin/sed
 
 LIB             := lib_$(HOST)
 BIN             := bin_$(HOST)

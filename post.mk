@@ -48,7 +48,7 @@ ifdef LINKFROM
 	$(RM) $(FILES2LINK)
 endif
 
-clean_exe :
+clean_exe : clean_git
 	@echo RM $(BIN) EXEs
 	@$(RM) -r $(BIN)
 	@$(RM) $(EXES)

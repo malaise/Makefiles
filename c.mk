@@ -53,7 +53,7 @@ LINKS := $(FILES2LINK)
 FILES4LINK := $(FILES2LINK:%=$(LINKFROM)/%)
 endif
 
-all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS)
+all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS) git
 	$(POST_LIBS)
 	@if [ "$(INSTALLED_HEADS)" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(INSTALLED_HEADS); \
@@ -162,4 +162,5 @@ clean_cdep clean_dep :
 	@$(RM) $(CDEP)
 
 include $(TEMPLATES)/post.mk
+include $(TEMPLATES)/git.mk
 

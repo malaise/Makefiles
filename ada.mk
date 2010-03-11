@@ -50,9 +50,10 @@ $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
 	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
-all : $(DIRS) alis libs $(EXES) afpx
+all : $(DIRS) alis libs $(EXES) afpx git
 
 include $(TEMPLATES)/post.mk
+include $(TEMPLATES)/git.mk
 
 # Static and dynamic exe
 $(BIN)/%.stat : $(DIRS) %.adb
