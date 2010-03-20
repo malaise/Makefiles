@@ -1,3 +1,5 @@
+.PHONY : git clean_git
+
 git: .gitignore
 
 .gitignore:
