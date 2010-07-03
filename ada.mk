@@ -7,7 +7,7 @@ ifeq ($(ADAWARN),true)
 ADAFLAG        := $(ADAFLAG) -gnatwa
 endif
 
-GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -fstack-check
+GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -fstack-check -gnat05
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
 GNATSTUBFLAG   := $(GNATSTUBFLAG) -gnaty2 -q
 GNATHTMLOPT    ?= -d
