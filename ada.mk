@@ -3,6 +3,8 @@ GNATMAKEFLAG   := $(patsubst %,-aI%,$(ADAVIEW)) $(patsubst %,-aO%/$(LIB),$(ADAVI
 GNATHTMLFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 GNATSTUBFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 endif
+
+ADAWARN        ?= true
 ifeq ($(ADAWARN),true)
 ADAFLAG        := $(ADAFLAG) -gnatwa
 endif
