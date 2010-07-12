@@ -12,6 +12,7 @@ endif
 GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -fstack-check -gnat05
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
 GNATSTUBFLAG   := $(GNATSTUBFLAG) -gnaty2 -q
+GNATSTUBPOST   := -cargs -gnat05
 GNATHTMLOPT    ?= -d
 
 GNATHTML       := $(GNATPATH)/gnathtml.pl $(GNATHTMLFLAG)
@@ -109,7 +110,7 @@ endif
 	@if [ ! -f $@ ] ; then \
 	  echo "gnatstub $<"; \
 	  PATH=$(GNATPATH):$(PATH); \
-	  $(GNATSTUB) $<; \
+	  $(GNATSTUB) $< $(GNATSTUBPOST); \
 	  if [ $$? -ne 0 ] ; then \
 	    exit 1; \
 	  fi; \
