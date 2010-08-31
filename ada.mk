@@ -22,7 +22,6 @@ ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
 OF             ?= $(LIBS) $(EXES)
-LSDEPARGS      := -v $(OF)
 
 ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) ' \
   BEGIN {code=0} \
@@ -108,34 +107,15 @@ endif
 # Make a stub of body from spec
 %.adb : %.ads
 	@if [ ! -f $@ ] ; then \
-	  echo "gnatstub $<"; \
-	  PATH=$(GNATPATH):$(PATH); \
-	  $(GNATSTUB) $< $(GNATSTUBPOST); \
-	  if [ $$? -ne 0 ] ; then \
-	    exit 1; \
-	  fi; \
-	  if [ ! -f $@ ] ; then \
-	    exit 0; \
-	  fi; \
 	  type astub > /dev/null 2>&1; \
 	  if [ $$? -eq 0 ] ; then \
-	    rm -rf $@; \
-	    echo "astub $<"; \
 	    astub $<; \
 	  else \
-	    echo "Warning: astub not found, keeping gnatsub result."; \
+	    echo "ERROR: astub not found."; \
+	    exit 1; \
 	  fi; \
 	else \
 	  $(TOUCH) $@; \
-	fi
-
-lsdep :
-	@type alsdep > /dev/null 2>&1; \
-	if [ $$? -ne 0 ] ; then \
-	  echo "Error: alsdep not found."; \
-	else \
-	  export ADAVIEW="$(ADAVIEW)"; \
-	  alsdep $(LSDEPARGS); \
 	fi
 
 echoadaview :
