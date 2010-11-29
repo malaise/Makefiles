@@ -82,7 +82,7 @@ $(LIB)/%.o : %.c
 
 $(LIB)/%.o : %.cpp
 	@echo "CPP $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@"
-	@$(CC) $(CPPOPT) $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@
+	@$(CPP) $(CPPOPT) $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@
 
 $(LIB)/%.so :
 	@if [ "$(OBJS_$(@F:%.so=%))" != "" ]; then \
@@ -102,10 +102,14 @@ $(BIN)/% : $(LIB)/%.o
 	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%,$(LIBS_$(@F))); \
 	fi
 	@if [ -f "$(@F).c" ] ; then \
-	  $(CC) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
+	  ECOM=CC; \
+	  COM=$(CC); \
 	else \
-	  $(CPP) -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
-	fi
+	  ECOM=CPP; \
+	  COM=$(CPP); \
+	fi; \
+	echo $$ECOM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
+	$$COM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm
 
 INSTALLED_HEADS := $(strip $(INST_HEADS:%=$(DEST_HEADS)/%))
 INSTALLED_LIBS := $(strip $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so))
