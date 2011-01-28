@@ -1,0 +1,23 @@
+This is a set of makefile templates for Ada and C compilation.
+
+A makefile in the source source is generally made of:
+-------------------------------------
+include $(HOME)/Makefiles/common.mk
+# Other includes
+# Definitions
+include $(TEMPLATES)/ada.mk # or c.mk
+-------------------------------------
+
+The generation will make two directories, lib_Linux (for the objects) and 
+bin_Linux (for the binaries) and create symlinks from bin_linux/* to .
+
+List of templates:
+common.mk : defines path to Makefiles and defines UNIX commands
+path.mk   : defines paths to Ada, C, gnat and pcre
+c.mk      : generation from C sources
+ada.mk    : generation from Ada sources
+units.mk  : define the list of current Ada units
+dir.mk    : recursive make (through subdirectories)
+git.mk    : generates a .gitignore
+post.mk   : init and cleanup commands
+
