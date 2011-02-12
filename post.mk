@@ -1,6 +1,6 @@
 CLEAN_EXES := $(EXES:%=clean_%)
 .PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
-         scratch html clean_html
+         scratch clean_html
 
 # Sub dirs
 $(BIN) :
@@ -59,7 +59,7 @@ $(CLEAN_EXES) :
 	  $(RM)  $(LIB)/$(@:clean_%=%).ali; \
 	fi
 
-clean_all : clean clean_exe clean_afpx
+clean_all : clean clean_exe clean_afpx clean_html
 
 new : clean_exe
 	@$(MAKE)  $(NOPRTDIR)
@@ -68,11 +68,15 @@ scratch : clean_all
 	@$(MAKE)  $(NOPRTDIR)
 
 # Html stuff
-html : clean_html
-	@$(GNATHTML) $(GNATHTMLOPT) *.ad?
-
 clean_html :
-	$(RM) -r html
+	@if [ -d html ] ; then \
+	  echo RM html; \
+	  $(RM) -r html; \
+	fi
+
+html : $(wildcard *.ad?)
+	@$(MAKE) clean_html
+	@$(GNATHTML) $(GNATHTMLOPT) *.ad?
 
 # Include any local makefile: cdep.mk...
 MAKEFILES := $(wildcard *.mk)

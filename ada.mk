@@ -23,6 +23,10 @@ ADA            := $(GNATMAKE) -c
 CARGS          := $(CARGS) -pipe
 OF             ?= $(LIBS) $(EXES)
 
+ifdef HTML
+HTML           = html
+endif
+
 ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) ' \
   BEGIN {code=0} \
   function strip(file,suff) {gsub(suff,"",file); return file} \
@@ -52,7 +56,7 @@ $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
 	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
-all : $(DIRS) alis libs $(EXES) git afpx
+all : $(DIRS) alis libs $(EXES) git afpx $(HTML)
 
 include $(TEMPLATES)/post.mk
 include $(TEMPLATES)/git.mk
