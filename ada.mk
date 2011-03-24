@@ -56,7 +56,9 @@ $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
 	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
-all : $(DIRS) alis libs $(EXES) git afpx $(HTML)
+TOBUILD := $(DIRS) alis libs $(EXES) git afpx
+all : $(TOBUILD) $(HTML)
+nohtml : $(TOBUILD)
 
 include $(TEMPLATES)/post.mk
 include $(TEMPLATES)/git.mk
