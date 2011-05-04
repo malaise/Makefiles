@@ -1,6 +1,6 @@
 This is a set of makefile templates for Ada and C compilation.
 
-A makefile in the source source is generally made of:
+A makefile in the source is generally made of:
 -------------------------------------
 include $(HOME)/Makefiles/common.mk
 # Other includes

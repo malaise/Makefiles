@@ -1,15 +1,18 @@
 CLEAN_EXES := $(EXES:%=clean_%)
 .PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
-         scratch clean_html
+         scratch clean_html texi clean_texi
 
 # Sub dirs
+ifdef BIN
 $(BIN) :
 	@echo MKDIR $@
 	@$(MKDIR) $@
-
+endif
+ifdef LIB
 $(LIB) :
 	@echo MKDIR $@
 	@$(MKDIR) $@
+endif
 
 # Local exes
 ifdef EXES
@@ -39,6 +42,29 @@ clean_afpx :;
 
 endif
 
+ifdef TEXI
+TEXI_TARGETS := $(TEXI:=.info) $(TEXI:=.html) $(TEXI:=.txt)
+.SUFFIXES : .texi .info .html .txt
+texi: $(TEXI_TARGETS)
+
+WIDTH = 78
+
+%.info : %.texi
+	@makeinfo -f $(if $($(basename $<)_WIDTH), $($(basename $<)_WIDTH), $(WIDTH)) \
+                 -o $@ $<
+
+%.html : %.texi
+	@makeinfo --html --no-split -o $@ $<
+
+%.txt : %.texi
+	@makeinfo -f $(if $($(basename $<)_WIDTH), $($(basename $<)_WIDTH), $(WIDTH)) \
+                 --plaintext -o $@ $<
+
+clean_texi :
+	@rm -f $(TEXI_TARGETS)
+endif
+
+
 # Clean stuff
 clean :
 	@echo RM $(LIB)
@@ -59,7 +85,7 @@ $(CLEAN_EXES) :
 	  $(RM)  $(LIB)/$(@:clean_%=%).ali; \
 	fi
 
-clean_all : clean clean_exe clean_afpx clean_html
+clean_all : clean clean_exe clean_afpx clean_html clean_texi
 
 new : clean_exe
 	@$(MAKE)  $(NOPRTDIR)
