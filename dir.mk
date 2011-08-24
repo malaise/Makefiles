@@ -6,10 +6,10 @@ TARGETS := all afpx lsdep echoadaview clean clean_exe clean_afpx clean_all \
 .PHONY : $(SUBDIRS) $(TARGETS)
 
 $(TARGETS) :
+	 $(MAKE) LOCAL_DIR=true $@
 ifneq ($(SUBDIRS),)
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
 endif
-	 $(MAKE) LOCAL_DIR=true $@
 else
 # Local targets
 .PHONY : all clean_all
