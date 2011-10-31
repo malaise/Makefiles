@@ -128,7 +128,7 @@ echoadaview :
 	@echo $(ADAVIEW)
 
 # Make gps project
-proj :
+prg :
 ifdef ADAVIEW
 	@SRCS='".", "'$(ADAVIEW)'"'; \
 	echo "project Ada is for Source_Dirs use ("$$SRCS"); end Ada;" \
