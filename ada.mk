@@ -130,7 +130,7 @@ echoadaview :
 # Make gps project
 prg :
 ifdef ADAVIEW
-	@SRCS='".", "'$(ADAVIEW)'"'; \
+	@SRCS='"..", "'$(ADAVIEW)'"'; \
 	echo "project Ada is for Source_Dirs use ("$$SRCS"); end Ada;" \
 	> $(LIB)/ada.prg
 endif
