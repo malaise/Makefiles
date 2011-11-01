@@ -56,7 +56,7 @@ $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
 	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
-TOBUILD := $(DIRS) alis libs $(EXES) git afpx texi prg
+TOBUILD := $(DIRS) alis libs $(EXES) git afpx texi gpr
 all : $(TOBUILD) $(HTML)
 nohtml : $(TOBUILD)
 
@@ -128,13 +128,13 @@ echoadaview :
 	@echo $(ADAVIEW)
 
 # Make gps project
-prg :
+gpr :
 ifdef ADAVIEW
 	@SRCS="@..@"; \
 	for dir in $(ADAVIEW) ; do \
 	  SRCS="$$SRCS, @$$dir@"; \
 	done; \
 	echo "project Ada is\n   for Source_Dirs use ("$$SRCS");\nend Ada;" \
-	  | sed -e 's/@/"/g' > $(LIB)/ada.prg
+	  | sed -e 's/@/"/g' > $(LIB)/ada.gpr
 endif
 
