@@ -77,11 +77,11 @@ $(LINKS) :
 endif
 
 $(LIB)/%.o : %.c
-	@echo "CC $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
+	@$(ECHO) "CC $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
 	@$(CC) $(CCOPT) $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@
 
 $(LIB)/%.o : %.cpp
-	@echo "CPP $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@"
+	@$(ECHO) "CPP $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@"
 	@$(CPP) $(CPPOPT) $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@
 
 $(LIB)/%.so :
@@ -108,7 +108,7 @@ $(BIN)/% : $(LIB)/%.o
 	  ECOM=CPP; \
 	  COM=$(CPP); \
 	fi; \
-	echo $$ECOM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
+	$(ECHO) $$ECOM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
 	$$COM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm
 
 INSTALLED_HEADS := $(strip $(INST_HEADS:%=$(DEST_HEADS)/%))
@@ -158,7 +158,7 @@ cdep dep :
 	      } \
 	    }' $$file` ; \
 	  if [ ! -z "$$list" ] ; then \
-	    echo "$$file :$$list" >> $(CDEP); \
+	    $(ECHO) "$$file :$$list" >> $(CDEP); \
 	  fi \
 	done \
 

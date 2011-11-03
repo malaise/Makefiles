@@ -2,7 +2,7 @@ ifneq ($(LOCAL_DIR),true)
 # Normal invocation: recusive then local
 TARGETS := all afpx lsdep echoadaview clean clean_exe clean_afpx clean_all \
            new scratch install cdep dep clean_cdep clean_dep html clean_html \
-           texi clean_texi
+           texi clean_texi gpr
 .PHONY : $(SUBDIRS) $(TARGETS)
 
 $(TARGETS) :

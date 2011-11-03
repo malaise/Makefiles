@@ -49,7 +49,7 @@ include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
 .SUFFIXES : .ads .adb .o .ali .stat
-.PHONY : all alis libs afpx lsdep echoadaview
+.PHONY : all alis libs afpx lsdep echoadaview nohtml
 .SECONDARY : $(BEXES)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb
@@ -117,7 +117,7 @@ endif
 	  if [ $$? -eq 0 ] ; then \
 	    astub $<; \
 	  else \
-	    echo "ERROR: astub not found."; \
+	    $(ECHO) "ERROR: astub not found."; \
 	    exit 1; \
 	  fi; \
 	else \
@@ -125,16 +125,5 @@ endif
 	fi
 
 echoadaview :
-	@echo $(ADAVIEW)
-
-# Make gps project
-gpr :
-ifdef ADAVIEW
-	@SRCS="@..@"; \
-	for dir in $(ADAVIEW) ; do \
-	  SRCS="$$SRCS, @$$dir@"; \
-	done; \
-	echo "project Ada is\n   for Source_Dirs use ("$$SRCS");\nend Ada;" \
-	  | sed -e 's/@/"/g' > $(LIB)/ada.gpr
-endif
+	@$(ECHO) $(ADAVIEW)
 

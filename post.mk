@@ -1,16 +1,16 @@
 CLEAN_EXES := $(EXES:%=clean_%)
 .PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
-         scratch clean_html texi clean_texi
+         scratch clean_html texi clean_texi gpr
 
 # Sub dirs
 ifdef BIN
 $(BIN) :
-	@echo MKDIR $@
+	@$(ECHO) MKDIR $@
 	@$(MKDIR) $@
 endif
 ifdef LIB
 $(LIB) :
-	@echo MKDIR $@
+	@$(ECHO) MKDIR $@
 	@$(MKDIR) $@
 endif
 
@@ -29,11 +29,11 @@ AFPX_FILES := AFPX.DSC AFPX.FLD AFPX.INI
 afpx : $(AFPX_FILES)
 
 $(AFPX_FILES) : Afpx.xml
-	@echo AFPX_BLD
+	@$(ECHO) AFPX_BLD
 	@afpx_bld > /dev/null
 
 clean_afpx :
-	@echo RM AFPX
+	@$(ECHO) RM AFPX
 	@$(RM) $(AFPX_FILES)
 else
 afpx :;
@@ -67,7 +67,7 @@ endif
 
 # Clean stuff
 clean :
-	@echo RM $(LIB)
+	@$(ECHO) RM $(LIB)
 	@$(RM) -r $(LIB)
 	@$(RM) b~*
 ifdef LINKFROM
@@ -75,7 +75,7 @@ ifdef LINKFROM
 endif
 
 clean_exe : clean_git
-	@echo RM $(BIN) EXEs
+	@$(ECHO) RM $(BIN) EXEs
 	@$(RM) -r $(BIN)
 	@$(RM) $(EXES)
 
@@ -96,13 +96,24 @@ scratch : clean_all
 # Html stuff
 clean_html :
 	@if [ -d html ] ; then \
-	  echo RM html; \
+	  $(ECHO) RM html; \
 	  $(RM) -r html; \
 	fi
 
 html : $(wildcard *.ad?)
 	@$(MAKE) clean_html
 	@$(GNATHTML) $(GNATHTMLOPT) *.ad?
+
+# Make gps project
+gpr :
+ifdef ADAVIEW
+	@SRCS="@..@"; \
+	for dir in $(ADAVIEW) ; do \
+	  SRCS="$$SRCS, @$$dir@"; \
+	done; \
+	$(ECHO) -e "project Ada is\n  for Source_Dirs use ("$$SRCS");\nend Ada;" \
+	  | $(SED) -e 's/@/"/g' > $(LIB)/ada.gpr
+endif
 
 # Include any local makefile: cdep.mk...
 MAKEFILES := $(wildcard *.mk)
