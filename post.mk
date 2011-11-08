@@ -66,7 +66,7 @@ endif
 
 
 # Clean stuff
-clean :
+clean : clean_gpr
 	@$(ECHO) RM $(LIB)
 	@$(RM) -r $(LIB)
 	@$(RM) b~*
@@ -82,7 +82,7 @@ clean_exe : clean_git
 $(CLEAN_EXES) :
 	@$(RM) $(LIB)/$(@:clean_%=%).o $(BIN)/$(@:clean_%=%) $(@:clean_%=%) 
 	@if [ -f $(LIB)/$(@:clean_%=%).ali ] ; then \
-	  $(RM)  $(LIB)/$(@:clean_%=%).ali; \
+	  $(RM) $(LIB)/$(@:clean_%=%).ali; \
 	fi
 
 clean_all : clean clean_exe clean_afpx clean_html clean_texi
@@ -107,12 +107,17 @@ html : $(wildcard *.ad?)
 # Make gps project
 gpr :
 ifdef ADAVIEW
-	@SRCS="@..@"; \
+	@SRCS="@.@"; \
 	for dir in $(ADAVIEW) ; do \
 	  SRCS="$$SRCS, @$$dir@"; \
 	done; \
 	$(ECHO) -e "project Ada is\n  for Source_Dirs use ("$$SRCS");\nend Ada;" \
-	  | $(SED) -e 's/@/"/g' > $(LIB)/ada.gpr
+	  | $(SED) -e 's/@/"/g' > ada.gpr
+endif
+
+clean_gpr :
+ifdef ADAVIEW
+	@$(RM) ada.gpr
 endif
 
 # Include any local makefile: cdep.mk...
