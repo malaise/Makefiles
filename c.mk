@@ -53,7 +53,7 @@ LINKS := $(FILES2LINK)
 FILES4LINK := $(FILES2LINK:%=$(LINKFROM)/%)
 endif
 
-all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS) git texi
+all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS) git texi txt
 	$(POST_LIBS)
 	@if [ "$(INSTALLED_HEADS)" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(INSTALLED_HEADS); \

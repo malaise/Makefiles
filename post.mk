@@ -1,6 +1,6 @@
 CLEAN_EXES := $(EXES:%=clean_%)
 .PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
-         scratch clean_html texi clean_texi gpr
+         scratch clean_html texi txt clean_texi clean_txt gpr
 
 # Sub dirs
 ifdef BIN
@@ -43,8 +43,8 @@ clean_afpx :;
 endif
 
 ifdef TEXI
-TEXI_TARGETS := $(TEXI:=.info) $(TEXI:=.html) $(TEXI:=.txt)
-.SUFFIXES : .texi .info .html .txt
+TEXI_TARGETS := $(TEXI:=.info) $(TEXI:=.text)
+.SUFFIXES : .texi .info .text
 texi: $(TEXI_TARGETS)
 
 WIDTH = 78
@@ -53,10 +53,7 @@ WIDTH = 78
 	@makeinfo -f $(if $($(basename $<)_WIDTH), $($(basename $<)_WIDTH), $(WIDTH)) \
                  -o $@ $<
 
-%.html : %.texi
-	@makeinfo --html --no-split -o $@ $<
-
-%.txt : %.texi
+%.text : %.texi
 	@makeinfo -f $(if $($(basename $<)_WIDTH), $($(basename $<)_WIDTH), $(WIDTH)) \
                  --plaintext -o $@ $<
 
@@ -64,6 +61,17 @@ clean_texi :
 	@rm -f $(TEXI_TARGETS)
 endif
 
+ifdef TXT
+TXT_TARGETS := $(TXT:=.html)
+.SUFFIXES : .txt .html
+txt: $(TXT_TARGETS)
+
+%.html : %.txt
+	@asciidoc --section-numbers -o $@ $<
+
+clean_txt :
+	@rm -f $(TXT_TARGETS)
+endif
 
 # Clean stuff
 clean : clean_gpr
@@ -85,7 +93,7 @@ $(CLEAN_EXES) :
 	  $(RM) $(LIB)/$(@:clean_%=%).ali; \
 	fi
 
-clean_all : clean clean_exe clean_afpx clean_html clean_texi
+clean_all : clean clean_exe clean_afpx clean_html clean_texi clean_txt
 
 new : clean_exe
 	@$(MAKE)  $(NOPRTDIR)

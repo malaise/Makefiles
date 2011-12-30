@@ -56,7 +56,7 @@ $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
 	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
-TOBUILD := $(DIRS) alis libs $(EXES) git afpx texi gpr
+TOBUILD := $(DIRS) alis libs $(EXES) git afpx texi txt gpr
 all : $(TOBUILD) $(HTML)
 nohtml : $(TOBUILD)
 
