@@ -67,7 +67,7 @@ TXT_TARGETS := $(TXT:=.html)
 txt: $(TXT_TARGETS)
 
 %.html : %.txt
-	@asciidoc --section-numbers -o $@ $<
+	@asciidoc --section-numbers $(DOCOPTS_$(*F)) -o $@ $<
 
 clean_txt :
 	@rm -f $(TXT_TARGETS)
