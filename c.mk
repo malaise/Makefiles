@@ -24,7 +24,7 @@ CPPOPT_Linux    += -Werror
 
 LD              := ld
 
-CFLAGS_Linux    := -pipe -fPIC
+CFLAGS_Linux    := -pipe -fPIC -std=gnu99 -D_FILE_OFFSET_BITS=64
 
 SOOPT_Linux     := 
 CDEP            := cdep.mk
