@@ -93,21 +93,43 @@ alis : $(LIB)
 ifdef LIBS
 libs : $(LIB)
 	@cd $(LIB); \
-  res=0; \
-  for file in $(LIBS); do \
-    if [ -f ../$$file.adb ] ; then \
-      src=$$file.adb; \
-    else \
-      src=$$file.ads; \
-    fi; \
-    $(ADA) ../$$src $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
-    if [ $$? -ne 0 ] ; then \
-      res=1; \
-    fi; \
-  done; \
-  exit $$res
+	  res=0; \
+	  for file in $(LIBS); do \
+	    if [ -f ../$$file.adb ] ; then \
+	      src=$$file.adb; \
+	    else \
+	      src=$$file.ads; \
+	    fi; \
+	    $(ADA) ../$$src $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
+	    if [ $$? -ne 0 ] ; then \
+	      res=1; \
+	    fi; \
+	  done; \
+	  exit $$res
 else
 libs :;
+endif
+
+ifdef LIBS
+lsunits :
+	@for file in $(LIBS); do \
+	  if [ -f $$file.adb ] ; then \
+	    echo `basename $$file.adb .adb`; \
+	  else \
+	    echo `basename $$file.ads .ads`; \
+	  fi; \
+	done
+else
+lsunits :
+	@for file in *.ads ; do \
+	  echo `basename $$file .ads`; \
+	done; \
+	for file in *.adb; do \
+	  if [ ! -f `basename $$file .adb`.ads ] ; then \
+	    echo `basename $$file .adb`; \
+	  fi; \
+	done
+
 endif
 
 # Make a stub of body from spec
