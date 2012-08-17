@@ -25,12 +25,15 @@ endif
 
 # Afpx stuff
 ifeq ($(AFPX),true)
-AFPX_FILES := AFPX.DSC AFPX.FLD AFPX.INI
+ifdef AFPX_XREF
+AFPX_XREF_FILE := $(AFPX_XREF).ads
+endif
+AFPX_FILES := AFPX.DSC AFPX.FLD AFPX.INI $(AFPX_XREF_FILE)
 afpx : $(AFPX_FILES)
 
 $(AFPX_FILES) : Afpx.xml
 	@$(ECHO) AFPX_BLD
-	@afpx_bld > /dev/null
+	@afpx_bld -x$(AFPX_XREF) > /dev/null
 
 clean_afpx :
 	@$(ECHO) RM AFPX

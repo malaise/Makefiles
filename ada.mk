@@ -49,14 +49,14 @@ include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
 .SUFFIXES : .ads .adb .o .ali .stat
-.PHONY : all alis libs afpx lsdep echoadaview nohtml
+.PHONY : all alis libs echoadaview nohtml
 .SECONDARY : $(BEXES)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
 	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
-TOBUILD := $(DIRS) alis libs $(EXES) git afpx texi txt gpr
+TOBUILD := $(DIRS) afpx alis libs $(EXES) git texi txt gpr
 all : $(TOBUILD) $(HTML)
 nohtml : $(TOBUILD)
 

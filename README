@@ -9,7 +9,7 @@ include $(TEMPLATES)/ada.mk # or c.mk
 -------------------------------------
 
 The generation will make two directories, lib_Linux (for the objects) and 
-bin_Linux (for the binaries) and create symlinks from bin_linux/* to .
+bin_Linux (for the binaries) and create symlinks from bin_Linux/* to .
 
 List of templates:
 common.mk : defines path to Makefiles and defines UNIX commands
