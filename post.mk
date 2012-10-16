@@ -27,13 +27,15 @@ endif
 ifeq ($(AFPX),true)
 ifdef AFPX_XREF
 AFPX_XREF_FILE := $(AFPX_XREF).ads
+AFPX_BLD_OPT := -x$(AFPX_XREF)
+AFPX_BLD_MSG := -x
 endif
 AFPX_FILES := AFPX.DSC AFPX.FLD AFPX.INI $(AFPX_XREF_FILE)
 afpx : $(AFPX_FILES)
 
 $(AFPX_FILES) : Afpx.xml
-	@$(ECHO) AFPX_BLD
-	@afpx_bld -x$(AFPX_XREF) > /dev/null
+	@$(ECHO) AFPX_BLD $(AFPX_BLD_MSG)
+	@afpx_bld $(AFPX_BLD_OPT) > /dev/null
 
 clean_afpx :
 	@$(ECHO) RM AFPX
@@ -53,10 +55,12 @@ texi: $(TEXI_TARGETS)
 WIDTH = 78
 
 %.info : %.texi
+	@echo DOC
 	@makeinfo -f $(if $($(basename $<)_WIDTH), $($(basename $<)_WIDTH), $(WIDTH)) \
                  -o $@ $<
 
 %.text : %.texi
+	@echo DOC
 	@makeinfo -f $(if $($(basename $<)_WIDTH), $($(basename $<)_WIDTH), $(WIDTH)) \
                  --plaintext -o $@ $<
 
@@ -70,6 +74,7 @@ TXT_TARGETS := $(TXT:=.html)
 txt: $(TXT_TARGETS)
 
 %.html : %.txt
+	@echo DOC
 	@asciidoc --section-numbers $(DOCOPTS_$(*F)) -o $@ $<
 
 clean_txt :
