@@ -75,7 +75,7 @@ txt: $(TXT_TARGETS)
 
 %.html : %.txt
 	@echo DOC
-	@asciidoc --section-numbers $(DOCOPTS_$(*F)) -o $@ $<
+	@asciidoc -a numbered $(DOCOPTS_$(*F)) -o $@ $<
 
 clean_txt :
 	@rm -f $(TXT_TARGETS)
