@@ -49,14 +49,14 @@ include $(TEMPLATES)/units.mk
 BEXES := $(EXES:%=$(BIN)/%)
 
 .SUFFIXES : .ads .adb .o .ali .stat
-.PHONY : all alis libs echoadaview nohtml
+.PHONY : all libs echoadaview nohtml
 .SECONDARY : $(BEXES)
 
 $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@cd $(LIB); \
 	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
-TOBUILD := $(DIRS) afpx alis libs $(EXES) git texi txt gpr
+TOBUILD := $(DIRS) afpx libs $(EXES) git texi txt gpr
 all : $(TOBUILD) $(HTML)
 nohtml : $(TOBUILD)
 
@@ -80,14 +80,6 @@ $(BIN)/% : $(DIRS) %.adb
 	  -bargs -shared \
 	  -largs $(CPATHL) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
                            $(LARGS_$(@F)) $(LARGS) $(ADA_FILTER)
-
-# Make ali in LIB
-alis : $(LIB)
-	@for file in $(UNITS) ; do \
-	  if [ ! -f $(LIB)/$$file.ali ] ; then \
-	    $(TOUCH) $(LIB)/$$file.ali; \
-	  fi; \
-	done
 
 # Compile local libraries (no exes)
 ifdef LIBS
@@ -142,8 +134,6 @@ endif
 	    $(ECHO) "ERROR: astub not found."; \
 	    exit 1; \
 	  fi; \
-	else \
-	  $(TOUCH) $@; \
 	fi
 
 echoadaview :
