@@ -101,8 +101,6 @@ $(CLEAN_EXES) :
 	  $(RM) $(LIB)/$(@:clean_%=%).ali; \
 	fi
 
-clean_all : clean clean_exe clean_afpx clean_html clean_texi clean_txt
-
 new : clean_exe
 	@$(MAKE)  $(NOPRTDIR)
 

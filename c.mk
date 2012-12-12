@@ -3,11 +3,6 @@ ifneq ($(origin DEBUG), undefined)
   CDEBUG = -g -DDEBUG
 endif
 
-CC_OSF1         := cc
-CCOPT_OSF1      := -O -std1 -warnprotos
-
-SOOPT_OSF1      := -all
-
 CC_Linux        := gcc
 CPP_Linux       := g++
 CCOPT_Linux     ?= -pedantic -Wall -W -Wpointer-arith \
@@ -44,37 +39,33 @@ BEXES  := $(EXES:%=$(BIN)/%)
 ALIBS  := $(LIBS:%=$(LIB)/%.a)
 SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
+OBJS := $(patsubst %.c,$(LIB)/%.o,$(wildcard *.c))
+
+
 .SUFFIXES : .h .c .hpp .cpp .o .a .so
-.PHONY : all install cdep dep clean_cdep clean_dep
-.SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS)
+.PHONY : all install dep clean_dep
+.SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS) $(OBJS)
 
 ifdef LINKFROM
 LINKS := $(FILES2LINK)
 FILES4LINK := $(FILES2LINK:%=$(LINKFROM)/%)
 endif
 
-all : $(DIRS) $(LINKS) $(ALIBS) $(SOLIBS) git texi txt
+all : txt $(DIRS) $(LINKS) dep $(ALIBS) $(SOLIBS) $(EXES) git texi
 	$(POST_LIBS)
-	@if [ "$(INSTALLED_HEADS)" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) $(INSTALLED_HEADS); \
-	fi
-	@if [ "$(INSTALLED_LIBS)" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) $(INSTALLED_LIBS); \
-	fi
-	@if [ "$(EXES)" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) $(EXES); \
-	fi
 	$(POST_EXES)
-	@if [ "$(INSTALLED_EXES)" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) $(INSTALLED_EXES); \
-	fi
+	@$(MAKE) $(NOPRTDIR) -s install
+
+clean_all : clean clean_exe clean_texi clean_txt clean_dep
 
 ifdef LINKFROM
 $(LINKS) :
-	$(LN) $(FILES4LINK) .
+	@$(ECHO) "LN $(FILES4LINK) ."
+	@$(LN) $(FILES4LINK) .
 else
 $(LINKS) :
 endif
+
 
 $(LIB)/%.o : %.c
 	@$(ECHO) "CC $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.c) -o $@"
@@ -84,22 +75,24 @@ $(LIB)/%.o : %.cpp
 	@$(ECHO) "CPP $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@"
 	@$(CPP) $(CPPOPT) $(CFLAGS) $(DINCLD) $(CARGS_$(@F:%.o=%)) -c $(@F:%.o=%.cpp) -o $@
 
-$(LIB)/%.so :
+$(LIB)/%.so : $(OBJS)
 	@if [ "$(OBJS_$(@F:%.so=%))" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) -s $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))); \
+	  $(MAKE) $(NOPRTDIR) -s $(patsubst %,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))); \
 	fi
-	$(LD) -shared $(SOOPT) -o $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))) -lc
-	-$(RM) so_locations
+	@$(ECHO) LD -shared $(SOOPT) -o $@ $(patsubst %,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))) -lc
+	@$(LD) -shared $(SOOPT) -o $@ $(patsubst %,$(LIB)/%.o,$(OBJS_$(@F:%.so=%))) -lc
+	@-$(RM) so_locations
 
-$(LIB)/%.a :
+$(LIB)/%.a : $(OBJS)
 	@if [ "$(OBJS_$(@F:%.a=%))" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) -s $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%))); \
+	  $(MAKE) $(NOPRTDIR) -s $(patsubst %,$(LIB)/%.o,$(OBJS_$(@F:%.a=%))); \
 	fi
-	$(AR) crs $@ $(patsubst %.o,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
+	@$(ECHO) AR crs $@ $(patsubst %,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
+	@$(AR) crs $@ $(patsubst %,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 
-$(BIN)/% : $(LIB)/%.o
+$(BIN)/% : $(LIB)/%.o $(SOLIBS)
 	@if [ "$(LIBS_$(@F))" != "" ]; then \
-	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%,$(LIBS_$(@F))); \
+	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%.a,$(LIBS_$(@F))); \
 	fi
 	@if [ -f "$(@F).c" ] ; then \
 	  ECOM=CC; \
@@ -108,8 +101,8 @@ $(BIN)/% : $(LIB)/%.o
 	  ECOM=CPP; \
 	  COM=$(CPP); \
 	fi; \
-	$(ECHO) $$ECOM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
-	$$COM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm
+	$(ECHO) $$ECOM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%.a) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
+	$$COM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%.a) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm
 
 INSTALLED_HEADS := $(strip $(INST_HEADS:%=$(DEST_HEADS)/%))
 INSTALLED_LIBS := $(strip $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so))
@@ -134,35 +127,15 @@ $(DEST_EXES)/% : $(BIN)/%
 
 install : $(INSTALLED)
 
-# Extract #include "<file>.h" directives of all .c, .cpp, .h and .hpp
-# Add local dependancies in $(CDEP)
-cdep dep :
-	@$(RM) $(CDEP)
-	@$(TOUCH) $(CDEP)
-	@hlist="`ls *.h 2> /dev/null`"; \
-	if [ -z "$$hlist" ] ; then \
-	  exit 0; \
-	fi; \
-	for file in `ls *.c *.cpp *.h *.hpp` ; do \
-	  list=`awk -v LIST="$$hlist" ' \
-	    BEGIN { \
-	      NLIST=split(LIST, HLIST, " ") \
-	    } \
-	    ( ($$1 == "#include") && ($$2 ~ "\".+\\\.h\"") ) { \
-	      INCL = substr ($$2, 2, length($$2)-2); \
-	      for (I = 1; I <= NLIST; I++) { \
-	        if (INCL == HLIST[I]) { \
-	          printf " " INCL; \
-	          next \
-	        } \
-	      } \
-	    }' $$file` ; \
-	  if [ ! -z "$$list" ] ; then \
-	    $(ECHO) "$$file :$$list" >> $(CDEP); \
-	  fi \
-	done \
+# Add local dependancies of *.o on .c[pp] and .h[pp] in $(CDEP)
+dep dep : $(CDEP)
 
-clean_cdep clean_dep :
+$(CDEP) : $(wildcard *.c *.cpp *.h *.hpp)
+	@$(CC) $(DINCLD) -MM `ls *.c *.cpp 2> /dev/null` 2>/dev/null | awk -v LIB=$(LIB) ' \
+	  ($$1 ~ /.*\.o/) {print LIB"/"$$0; next} \
+          {print}' > $(CDEP)
+
+clean_dep :
 	@$(RM) $(CDEP)
 
 include $(TEMPLATES)/post.mk

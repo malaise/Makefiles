@@ -57,7 +57,11 @@ $(LIB)/%.ali $(LIB)/%.o :: %.adb
 	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
 
 TOBUILD := $(DIRS) afpx libs $(EXES) git texi txt gpr
+
 all : $(TOBUILD) $(HTML)
+
+clean_all : clean clean_exe clean_afpx clean_html clean_texi clean_txt
+
 nohtml : $(TOBUILD)
 
 include $(TEMPLATES)/post.mk
