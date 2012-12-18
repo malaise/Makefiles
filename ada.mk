@@ -51,9 +51,9 @@ BEXES := $(EXES:%=$(BIN)/%)
 
 .SUFFIXES : .ads .adb .o .ali .stat
 .PHONY : all libs echoadaview lsunits nohtml
-.SECONDARY : $(BEXES)
+.SECONDARY : $(DIRS) $(BEXES)
 
-TOBUILD := $(DIRS) afpx libs exes git texi txt gpr
+TOBUILD := dirs afpx libs exes git texi txt gpr
 
 all : $(TOBUILD) $(HTML)
 
@@ -63,6 +63,9 @@ nohtml : $(TOBUILD)
 
 include $(TEMPLATES)/post.mk
 include $(TEMPLATES)/git.mk
+
+dirs : $(DIRS)
+
 
 # Static and dynamic exe
 $(BIN)/%.stat : $(DIRS) $(LIB)/%.o %.adb
@@ -100,11 +103,12 @@ libs :
 	  exit $$res
 
 exes :
-	@$(MAKE) $(NOPRTDIR) -s $(BEXES)
-	@for file in $(EXES) ; do \
-	  $(LN) -f $(BIN)/$$file .; \
-	done
-
+	@if [ ! -z "$(EXES)" ]; then \
+	  $(MAKE) $(NOPRTDIR) -s $(BEXES); \
+	  for file in $(EXES) ; do \
+	    $(LN) -f $(BIN)/$$file .; \
+	  done; \
+	fi
 
 lsunits :
 	@for file in *.ads ; do \
