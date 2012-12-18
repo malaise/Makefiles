@@ -21,7 +21,6 @@ GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
-OF             ?= $(LIBS) $(EXES)
 
 ifdef HTML
 HTML           = html
@@ -46,17 +45,15 @@ ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) ' \
 '
 
 include $(TEMPLATES)/units.mk
+LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
+
 BEXES := $(EXES:%=$(BIN)/%)
 
 .SUFFIXES : .ads .adb .o .ali .stat
-.PHONY : all libs echoadaview nohtml
+.PHONY : all libs echoadaview lsunits nohtml
 .SECONDARY : $(BEXES)
 
-$(LIB)/%.ali $(LIB)/%.o :: %.adb
-	@cd $(LIB); \
-	@$(ADA) ../$(<F) $(GARGS) -cargs $(CARGS) $(ADA_FILTER)
-
-TOBUILD := $(DIRS) afpx libs $(EXES) git texi txt gpr
+TOBUILD := $(DIRS) afpx libs exes git texi txt gpr
 
 all : $(TOBUILD) $(HTML)
 
@@ -68,7 +65,7 @@ include $(TEMPLATES)/post.mk
 include $(TEMPLATES)/git.mk
 
 # Static and dynamic exe
-$(BIN)/%.stat : $(DIRS) %.adb
+$(BIN)/%.stat : $(DIRS) $(LIB)/%.o %.adb
 	@cd $(LIB); \
 	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
@@ -76,7 +73,7 @@ $(BIN)/%.stat : $(DIRS) %.adb
 	  -bargs -static \
 	  -largs $(LARGS_$(@F)) $(LARGS) -lm $(ADA_FILTER)
 
-$(BIN)/% : $(DIRS) %.adb
+$(BIN)/% : $(DIRS) $(LIB)/%.o %.adb
 	@cd $(LIB); \
 	$(GNATMAKE) ../$(@F) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
@@ -85,16 +82,15 @@ $(BIN)/% : $(DIRS) %.adb
 	  -largs $(CPATHL) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
                            $(LARGS_$(@F)) $(LARGS) $(ADA_FILTER)
 
-# Compile local libraries (no exes)
-ifdef LIBS
-libs : $(LIB)
-	@cd $(LIB); \
-	  res=0; \
-	  for file in $(LIBS); do \
-	    if [ -f ../$$file.adb ] ; then \
-	      src=$$file.adb; \
+# Compile local libraries
+libs :
+	 @cd $(LIB); \
+	 res=0; \
+	 for unit in $(LIBS); do \
+	    if [ -f ../$$unit.adb ] ; then \
+	      src=$$unit.adb; \
 	    else \
-	      src=$$file.ads; \
+	      src=$$unit.ads; \
 	    fi; \
 	    $(ADA) ../$$src $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
 	    if [ $$? -ne 0 ] ; then \
@@ -102,20 +98,14 @@ libs : $(LIB)
 	    fi; \
 	  done; \
 	  exit $$res
-else
-libs :;
-endif
 
-ifdef LIBS
-lsunits :
-	@for file in $(LIBS); do \
-	  if [ -f $$file.adb ] ; then \
-	    echo `basename $$file.adb .adb`; \
-	  else \
-	    echo `basename $$file.ads .ads`; \
-	  fi; \
+exes :
+	@$(MAKE) $(NOPRTDIR) -s $(BEXES)
+	@for file in $(EXES) ; do \
+	  $(LN) -f $(BIN)/$$file .; \
 	done
-else
+
+
 lsunits :
 	@for file in *.ads ; do \
 	  echo `basename $$file .ads`; \
@@ -125,8 +115,6 @@ lsunits :
 	    echo `basename $$file .adb`; \
 	  fi; \
 	done
-
-endif
 
 # Make a stub of body from spec
 %.adb : %.ads
