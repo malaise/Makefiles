@@ -103,12 +103,17 @@ libs :
 	  exit $$res
 
 exes :
-	@if [ ! -z "$(EXES)" ]; then \
+	@ res=0; \
+	if [ ! -z "$(EXES)" ]; then \
 	  $(MAKE) $(NOPRTDIR) -s $(BEXES); \
+	  if [ $$? -ne 0 ] ; then \
+	    res=1; \
+	  fi; \
 	  for file in $(EXES) ; do \
 	    $(LN) -f $(BIN)/$$file .; \
 	  done; \
-	fi
+	fi; \
+	exit $$res
 
 lsunits :
 	@for file in *.ads ; do \
