@@ -21,6 +21,7 @@ GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
+LARGS          := $(LARGS) -L/usr/local/lib
 
 ifdef HTML
 HTML           = html
@@ -43,6 +44,9 @@ ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) ' \
   {code=1; print} \
   END {exit (code)} \
 '
+ifdef NOFILTER
+ADA_FILTER =
+endif
 
 include $(TEMPLATES)/units.mk
 LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
@@ -82,8 +86,8 @@ $(BIN)/% : $(DIRS) $(LIB)/%.o %.adb
 	  $(GARGS_$(@F)) $(GARGS) \
 	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -shared \
-	  -largs $(CPATHL) $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) \
-                           $(LARGS_$(@F)) $(LARGS) $(ADA_FILTER)
+	  -largs $(CPATHL) $(LARGS_$(@F)) $(LARGS) \
+           $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) $(ADA_FILTER)
 
 # Compile local libraries
 libs :

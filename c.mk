@@ -30,6 +30,7 @@ CFLAGS          := $(CFLAGS) $(CFLAGS_$(HOST)) $(CDEBUG) -D$(HOST) -pthread
 CCOPT           := $(CCOPT) $(CCOPT_$(HOST))
 CPPOPT          := $(CPPOPT) $(CPPOPT_$(HOST))
 SOOPT           := $(SOOPT) $(SOOPT_$(HOST))
+LDFLAGS         := $(LDFLAGS) -L/usr/local/lib
 
 DINCLD := $(DINCL:%=-I../%) $(DLIBA:%=-I../%)
 DLIBAD := $(foreach dir,$(DLIBA),../$(dir)/$(LIB)/lib$(dir).a)
@@ -101,8 +102,8 @@ $(BIN)/% : $(LIB)/%.o $(SOLIBS)
 	  ECOM=CPP; \
 	  COM=$(CPP); \
 	fi; \
-	$(ECHO) $$ECOM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%.a) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
-	$$COM -o $@ $< $(LIBS_$(@F):%=$(LIB)/%.a) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm
+	$(ECHO) $$ECOM -o $@ $< $(LDFLAGS) $(LIBS_$(@F):%=$(LIB)/%.a) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm; \
+	$$COM -o $@ $< $(LDFLAGS) $(LIBS_$(@F):%=$(LIB)/%.a) $(DLIBAD) $(LARGS_$(@F)) -lpthread -lm
 
 INSTALLED_HEADS := $(strip $(INST_HEADS:%=$(DEST_HEADS)/%))
 INSTALLED_LIBS := $(strip $(INST_LIBS:%=$(DEST_LIBS)/%.a) $(INST_LIBS:%=$(DEST_LIBS)/%.so))
