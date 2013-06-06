@@ -87,7 +87,7 @@ $(BIN)/% : $(DIRS) $(LIB)/%.o %.adb
 	  -cargs $(CARGS_$(@F)) $(CARGS) \
 	  -bargs -shared \
 	  -largs $(CPATHL) $(LARGS_$(@F)) $(LARGS) \
-           $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) $(ADA_FILTER)
+           $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) -lm $(ADA_FILTER)
 
 # Compile local libraries
 libs :
