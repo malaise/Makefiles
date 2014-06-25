@@ -135,8 +135,8 @@ ifdef ADAVIEW
 endif
 
 # Include any local makefile: cdep.mk...
-MAKEFILES := $(wildcard *.mk)
-ifneq ($(MAKEFILES),)
-include $(MAKEFILES)
+LOCAL_MAKEFILES := $(wildcard *.mk)
+ifneq ($(LOCAL_MAKEFILES),)
+include $(LOCAL_MAKEFILES)
 endif
 
