@@ -1,5 +1,5 @@
 HOST            := $(shell uname -s)
-TEMPLATES       := $(HOME)/Makefiles
+TEMPLATES       := $(if $(MAKFILES_DIR), $(MAKFILES_DIR), $(HOME)/Makefiles)
 
 RM              := /bin/rm -f
 CP              := /bin/cp -pPf
