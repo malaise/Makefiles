@@ -107,7 +107,7 @@ libs :
 	  exit $$res
 
 exes :
-	@ res=0; \
+	@res=0; \
 	if [ ! -z "$(EXES)" ]; then \
 	  $(MAKE) $(NOPRTDIR) -s $(BEXES); \
 	  if [ $$? -ne 0 ] ; then \

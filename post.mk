@@ -116,7 +116,8 @@ clean_html :
 
 html : $(wildcard *.ad?)
 	@$(MAKE) clean_html
-	@$(GNATHTML) $(GNATHTMLOPT) *.ad?
+	@echo HTML
+	@$(GNATHTML) $(GNATHTMLOPT) *.ad? > /dev/null
 
 # Make gps project
 gpr :
