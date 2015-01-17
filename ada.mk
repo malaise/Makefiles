@@ -27,13 +27,13 @@ ifdef HTML
 HTML           = html
 endif
 
-ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) ' \
+ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim ' \
   BEGIN {code=0} \
   function strip(file,suff) {gsub(suff,"",file); return file} \
   ($$0 ~ /gnatmake: .+ up to date./) {next} \
   ($$2 == "warning:") {print; next} \
   ($$1 == "gcc" && $$2 == "-c" ) { \
-    printf "ADA %s %s\n",ADAOPT,strip($$NF,"\\.\\./"); next \
+    printf "ADA %s %s %s \n",ADAOPT,OPTIM,strip($$NF,"\\.\\./"); next \
   } \
   ($$1 == "gnatbind") {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
   ($$1 == "gnatlink") { \
@@ -91,7 +91,7 @@ $(BIN)/% : $(DIRS) $(LIB)/%.o %.adb
 
 # Compile local libraries
 libs :
-	 @cd $(LIB); \
+	 @cd $(LIB); export OPTIMIZED=" $(OPTIMIZED) "; \
 	 res=0; \
 	 for unit in $(LIBS); do \
 	    if [ -f ../$$unit.adb ] ; then \
@@ -99,7 +99,13 @@ libs :
 	    else \
 	      src=$$unit.ads; \
 	    fi; \
-	    $(ADA) ../$$src $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
+	    echo "$$OPTIMIZED" | grep " $$unit " >/dev/null; \
+	    if [ $$? -eq 0 ] ; then \
+	      export optim="-O2"; \
+	    else \
+	      export optim=""; \
+	    fi; \
+	    $(ADA) ../$$src $(GARGS) $$optim -cargs $(CARGS) $(ADA_FILTER); \
 	    if [ $$? -ne 0 ] ; then \
 	      res=1; \
 	    fi; \
