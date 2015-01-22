@@ -48,16 +48,25 @@ ifdef NOFILTER
 ADA_FILTER =
 endif
 
+PREPROCESSOR = awk -v DEFINES=" $(PARGS) $(PARGS_$<) " ' \
+  BEGIN {LEVEL=1; KEEP[LEVEL]=1} \
+    ($$0 ~ /^[[:blank:]]*--\#Ifdef[[:blank:]]+[^[:blank:]]+[[:blank:]]*$$/) { \
+      LEVEL++; KEEP[LEVEL] = (KEEP[LEVEL-1] && match (DEFINES, " " $$2 " ")); next} \
+    ($$0 ~ /^[[:blank:]]*--\#Endif[[:blank:]]*$$/) {LEVEL--; next} \
+    (KEEP[LEVEL] == 1) {print; next } \
+'
+
 include $(TEMPLATES)/units.mk
 LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
+PREPROC := $(wildcard *.aps *.apb)
 
 BEXES := $(EXES:%=$(BIN)/%)
 
-.SUFFIXES : .ads .adb .o .ali .stat
-.PHONY : all libs echoadaview lsunits nohtml
+.SUFFIXES : .ads .adb .aps .apb .o .ali .stat
+.PHONY : all preprocess libs echoadaview lsunits nohtml
 .SECONDARY : $(DIRS) $(BEXES)
 
-TOBUILD := dirs afpx libs exes git texi txt gpr
+TOBUILD := dirs afpx preprocess libs exes git texi txt gpr
 
 all : $(TOBUILD) $(HTML)
 
@@ -99,7 +108,7 @@ libs :
 	    else \
 	      src=$$unit.ads; \
 	    fi; \
-	    echo "$$OPTIMIZED" | grep " $$unit " >/dev/null; \
+	    $(ECHO) "$$OPTIMIZED" | grep " $$unit " >/dev/null; \
 	    if [ $$? -eq 0 ] ; then \
 	      export optim="-O2"; \
 	    else \
@@ -125,13 +134,35 @@ exes :
 	fi; \
 	exit $$res
 
-lsunits :
+preprocess :
+ifdef PREPROC
+	@for file in $(PREPROC) ; do \
+	  if [ `basename $$file .aps`.aps = $$file ] ; then \
+	    name=`basename $$file .aps`; \
+	    suff=ads; \
+	  else \
+	    name=`basename $$file .apb`; \
+            suff=adb; \
+	  fi; \
+	  $(MAKE) $(NOPRTDIR) $(SILENT) $$name.$$suff; \
+	done
+endif
+
+%.ads : %.aps
+	@$(ECHO) APP $(PARGS) $(PARGS_$<) $<
+	@$(PREPROCESSOR) < $< > $@	
+
+%.adb : %.apb
+	@$(ECHO) APP $(PARGS_$<) $<
+	$(PREPROCESSOR) < $< > $@	
+
+lsunits : preprocess
 	@for file in *.ads ; do \
-	  echo `basename $$file .ads`; \
+	  $(ECHO) `basename $$file .ads`; \
 	done; \
 	for file in *.adb; do \
 	  if [ ! -f `basename $$file .adb`.ads ] ; then \
-	    echo `basename $$file .adb`; \
+	    $(ECHO) `basename $$file .adb`; \
 	  fi; \
 	done
 

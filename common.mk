@@ -16,6 +16,7 @@ BIN             := bin_$(HOST)
 DIRS            := $(LIB) $(BIN)
 
 NOPRTDIR        := --no-print-directory
+SILENT          := --silent
 
 include $(TEMPLATES)/path.mk
 

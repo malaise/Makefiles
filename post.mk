@@ -89,6 +89,10 @@ clean : clean_gpr
 ifdef LINKFROM
 	$(RM) $(FILES2LINK)
 endif
+ifdef PREPROC
+	$(RM) $(patsubst %.aps,%.ads,$(wildcard *.aps))
+	$(RM) $(patsubst %.apb,%.adb,$(wildcard *.apb))
+endif
 
 clean_exe : clean_git
 	@$(ECHO) RM $(BIN) EXEs
