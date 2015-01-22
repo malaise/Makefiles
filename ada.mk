@@ -52,8 +52,10 @@ PREPROCESSOR = awk -v DEFINES=" $(PARGS) $(PARGS_$<) " ' \
   BEGIN {LEVEL=1; KEEP[LEVEL]=1} \
     ($$0 ~ /^[[:blank:]]*--\#Ifdef[[:blank:]]+[^[:blank:]]+[[:blank:]]*$$/) { \
       LEVEL++; KEEP[LEVEL] = (KEEP[LEVEL-1] && match (DEFINES, " " $$2 " ")); next} \
+    ($$0 ~ /^[[:blank:]]*--\#Else[[:blank:]]*$$/) {KEEP[LEVEL] = KEEP[LEVEL-1] && (!KEEP[LEVEL]); next} \
     ($$0 ~ /^[[:blank:]]*--\#Endif[[:blank:]]*$$/) {LEVEL--; next} \
-    (KEEP[LEVEL] == 1) {print; next } \
+    (KEEP[LEVEL]) {print; next } \
+    END {if (LEVEL != 1) {print "APP ERROR: Unterminated condition" > "/dev/stderr"; exit (1)}} \
 '
 
 include $(TEMPLATES)/units.mk
