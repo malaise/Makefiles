@@ -49,13 +49,15 @@ ADA_FILTER =
 endif
 
 PREPROCESSOR = awk -v DEFINES=" $(PARGS) $(PARGS_$<) " ' \
-  BEGIN {LEVEL=1; KEEP[LEVEL]=1} \
-    ($$0 ~ /^[[:blank:]]*--\#Ifdef[[:blank:]]+[^[:blank:]]+[[:blank:]]*$$/) { \
-      LEVEL++; KEEP[LEVEL] = (KEEP[LEVEL-1] && match (DEFINES, " " $$2 " ")); next} \
-    ($$0 ~ /^[[:blank:]]*--\#Else[[:blank:]]*$$/) {KEEP[LEVEL] = KEEP[LEVEL-1] && (!KEEP[LEVEL]); next} \
-    ($$0 ~ /^[[:blank:]]*--\#Endif[[:blank:]]*$$/) {LEVEL--; next} \
-    (KEEP[LEVEL]) {print; next } \
-    END {if (LEVEL != 1) {print "APP ERROR: Unterminated condition" > "/dev/stderr"; exit (1)}} \
+  BEGIN {LVL=0; KEEP[LVL]=1} \
+    ($$0 ~ /^[[:blank:]]*--\#IfDef[[:blank:]]+[^[:blank:]]+[[:blank:]]*$$/) { \
+      LVL++; KEEP[LVL]=(KEEP[LVL-1] && match (DEFINES, " " $$2 " ")); OK[LVL]=KEEP[LVL]; LINE[LVL]=NR; next} \
+    ($$0 ~ /^[[:blank:]]*--\#ElsifDef[[:blank:]]+[^[:blank:]]+[[:blank:]]*$$/) { \
+      KEEP[LVL]=(!OK[LVL] && KEEP[LVL-1] && match (DEFINES, " " $$2 " ")); OK[LVL]=OK[LVL]||KEEP[LVL]; next} \
+    ($$0 ~ /^[[:blank:]]*--\#ElseDef[[:blank:]]*$$/) {KEEP[LVL]=(KEEP[LVL-1] && (!KEEP[LVL])); next} \
+    ($$0 ~ /^[[:blank:]]*--\#EndifDef[[:blank:]]*$$/) {LVL--; next} \
+    (KEEP[LVL]) {print; next } \
+    END {if (LVL != 0) {print "APP ERROR: Unterminated condition started at line " LINE[LVL] > "/dev/stderr"; exit (1)}} \
 '
 
 include $(TEMPLATES)/units.mk
