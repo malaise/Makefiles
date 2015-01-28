@@ -12,7 +12,7 @@ endif
 GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -fstack-check -gnat12
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
 GNATSTUBFLAG   := $(GNATSTUBFLAG) -gnaty2 -q
-GNATSTUBPOST   := -cargs -gnat05
+GNATSTUBPOST   := -cargs -gnat12
 GNATHTMLOPT    ?= -d
 
 GNATHTML       := $(GNATPATH)/gnathtml.pl $(GNATHTMLFLAG)
