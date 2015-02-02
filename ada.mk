@@ -54,7 +54,7 @@ PREPROCESSOR = awk -v DEFINES=" $(PARGS) $(PARGS_$<) " ' \
       LVL++; KEEP[LVL]=(KEEP[LVL-1] && match (DEFINES, " " $$2 " ")); OK[LVL]=KEEP[LVL]; LINE[LVL]=NR; next} \
     ($$0 ~ /^[[:blank:]]*--\#ElsifDef[[:blank:]]+[^[:blank:]]+[[:blank:]]*$$/) { \
       KEEP[LVL]=(!OK[LVL] && KEEP[LVL-1] && match (DEFINES, " " $$2 " ")); OK[LVL]=OK[LVL]||KEEP[LVL]; next} \
-    ($$0 ~ /^[[:blank:]]*--\#ElseDef[[:blank:]]*$$/) {KEEP[LVL]=(KEEP[LVL-1] && (!KEEP[LVL])); next} \
+    ($$0 ~ /^[[:blank:]]*--\#ElseDef[[:blank:]]*$$/) {KEEP[LVL]=(KEEP[LVL-1] && (!OK[LVL])); next} \
     ($$0 ~ /^[[:blank:]]*--\#EndifDef[[:blank:]]*$$/) {LVL--; next} \
     (KEEP[LVL]) {print; next } \
     END {if (LVL != 0) {print "APP ERROR: Unterminated condition started at line " LINE[LVL] > "/dev/stderr"; exit (1)}} \
