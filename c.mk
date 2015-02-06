@@ -136,7 +136,7 @@ $(CDEP) : $(wildcard *.c *.cpp *.h *.hpp)
 	  ($$1 ~ /.*\.o/) {print LIB"/"$$0; next} \
           {print}' > $(CDEP)
 
-clean_dep :
+clean_dep : clean_git
 	@$(RM) $(CDEP)
 
 include $(TEMPLATES)/post.mk

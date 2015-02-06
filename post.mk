@@ -37,7 +37,7 @@ $(AFPX_FILES) : Afpx.xml
 	@$(ECHO) AFPX_BLD $(AFPX_BLD_MSG)
 	@afpx_bld $(AFPX_BLD_OPT) > /dev/null
 
-clean_afpx :
+clean_afpx : clean_git
 	@$(ECHO) RM AFPX
 	@$(RM) $(AFPX_FILES)
 else
@@ -64,7 +64,7 @@ WIDTH = 78
 	@makeinfo -f $(if $($(basename $<)_WIDTH), $($(basename $<)_WIDTH), $(WIDTH)) \
                  --plaintext -o $@ $<
 
-clean_texi :
+clean_texi : clean_git
 	@rm -f $(TEXI_TARGETS)
 endif
 
@@ -77,21 +77,21 @@ txt: $(TXT_TARGETS)
 	@echo DOC
 	@asciidoc -a numbered $(DOCOPTS_$(*F)) -o $@ $<
 
-clean_txt :
+clean_txt : clean_git
 	@rm -f $(TXT_TARGETS)
 endif
 
 # Clean stuff
-clean : clean_gpr
+clean : clean_gpr clean_git
 	@$(ECHO) RM $(LIB)
 	@$(RM) -r $(LIB)
 	@$(RM) b~*
 ifdef LINKFROM
-	$(RM) $(FILES2LINK)
+	@$(RM) $(FILES2LINK)
 endif
 ifdef PREPROC
-	$(RM) $(patsubst %.aps,%.ads,$(wildcard *.aps))
-	$(RM) $(patsubst %.apb,%.adb,$(wildcard *.apb))
+	@$(RM) $(patsubst %.aps,%.ads,$(wildcard *.aps))
+	@$(RM) $(patsubst %.apb,%.adb,$(wildcard *.apb))
 endif
 
 clean_exe : clean_git
