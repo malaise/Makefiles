@@ -26,3 +26,14 @@ CPATHD          := $(CPATH:%=%/$(LIB))
 CPATHL          := $(CPATHD:%=-L%)
 endif
 
+ifdef PCRE
+PCRE_SLIBS := posix2pcre $(PCRE_LIBS)
+PCRE_ALIBS := $(CPATHD)/libposix2pcre.a $(PCRE_LIBS:%=$(PCRE_LIB)/lib%.a)
+endif
+
+UTILS_SLIBS := cutil
+UTILS_ALIBS := $(CPATHD)/libcutil.a
+
+X11_SLIBS := x_mng $(UTILS_SLIBS) X11
+X11_ALIBS := $(CPATHD)/libx_mng.a $(UTILS_ALIBS) -lX11
+

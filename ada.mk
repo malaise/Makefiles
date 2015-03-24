@@ -45,7 +45,7 @@ ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim ' \
   END {exit (code)} \
 '
 ifdef NOFILTER
-ADA_FILTER =
+ADA_FILTER :=
 endif
 
 PREPROCESSOR = awk -v DEFINES=" $(PARGS) $(PARGS_$<) " ' \

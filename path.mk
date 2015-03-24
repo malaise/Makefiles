@@ -15,5 +15,4 @@ PCRE_LIBS := pcre2-posix pcre2-8
 endif
 PCRE_INCL := `$(PCRE_CFG) --cflags`
 PCRE_LIB  := `$(PCRE_CFG) --prefix`/lib/$(ARCH)
-PCRE_ALIBS := $(PCRE_LIBS:%=$(PCRE_LIB)/lib%.a)
 
