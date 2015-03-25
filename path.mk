@@ -2,7 +2,7 @@ ADAPATH   ?= $(HOME)/ada
 CPATH     := $(ADAPATH)/c
 REPOSIT   := $(ADAPATH)/reposit
 USR       := $(ADAPATH)/usr
-GNATPATH  := /shared/tools/exec/gnat/bin
+GNATPATH  := /usr/local/gnat/bin
 
 PCRE = PCRE1
 CFLAGS    := -D$(PCRE)
