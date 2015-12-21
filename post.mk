@@ -1,4 +1,4 @@
-CLEAN_EXES := $(EXES:%=clean_%)
+CLEAN_EXES := $(EXES:%=clean_%) $(PREREQS:%=clean_%)
 .PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
          scratch clean_html texi txt clean_texi clean_txt gpr
 
@@ -22,6 +22,14 @@ ifdef EXES
 $(EXES) : $(BEXES)
 	@$(LN) $(BIN)/$@
 endif
+ifdef PREREQS
+% : $(BIN)/%
+	@$(LN) $< $@
+
+$(PREREQS) : $(BPREREQS)
+	@$(LN) $(BIN)/$@
+endif
+
 
 # Afpx stuff
 ifeq ($(AFPX),true)
@@ -97,7 +105,7 @@ endif
 clean_exe : clean_git
 	@$(ECHO) RM $(BIN) EXEs
 	@$(RM) -r $(BIN)
-	@$(RM) $(EXES)
+	@$(RM) $(EXES) $(PREREQS)
 
 $(CLEAN_EXES) :
 	@$(RM) $(LIB)/$(@:clean_%=%).o $(BIN)/$(@:clean_%=%) $(@:clean_%=%) 

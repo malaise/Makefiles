@@ -48,29 +48,21 @@ ifdef NOFILTER
 ADA_FILTER :=
 endif
 
-PREPROCESSOR = awk -v DEFINES=" $(PARGS) $(PARGS_$<) " ' \
-  BEGIN {LVL=0; KEEP[LVL]=1} \
-    ($$0 ~ /^[[:blank:]]*--\#IfDef[[:blank:]]+[^[:blank:]]+[[:blank:]]*$$/) { \
-      LVL++; KEEP[LVL]=(KEEP[LVL-1] && match (DEFINES, " " $$2 " ")); OK[LVL]=KEEP[LVL]; LINE[LVL]=NR; next} \
-    ($$0 ~ /^[[:blank:]]*--\#ElsifDef[[:blank:]]+[^[:blank:]]+[[:blank:]]*$$/) { \
-      KEEP[LVL]=(!OK[LVL] && KEEP[LVL-1] && match (DEFINES, " " $$2 " ")); OK[LVL]=OK[LVL]||KEEP[LVL]; next} \
-    ($$0 ~ /^[[:blank:]]*--\#ElseDef[[:blank:]]*$$/) {KEEP[LVL]=(KEEP[LVL-1] && (!OK[LVL])); next} \
-    ($$0 ~ /^[[:blank:]]*--\#EndifDef[[:blank:]]*$$/) {LVL--; next} \
-    (KEEP[LVL]) {print; next } \
-    END {if (LVL != 0) {print "APP ERROR: Unterminated condition started at line " LINE[LVL] > "/dev/stderr"; exit (1)}} \
-'
+PREPROCESSOR = app '--prefix=--\#' $(PARGS) $(PARGS_$<)
 
 include $(TEMPLATES)/units.mk
 LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
 PREPROC := $(wildcard *.aps *.apb)
 
 BEXES := $(EXES:%=$(BIN)/%)
+BPREREQS := $(PREREQS:%=$(BIN)/%)
+SPREREQS := $(PREREQS:%=../%.adb)
 
 .SUFFIXES : .ads .adb .aps .apb .o .ali .stat
-.PHONY : all preprocess libs echoadaview lsunits nohtml
+.PHONY : all preprocess prerequisit libs echoadaview lsunits nohtml
 .SECONDARY : $(DIRS) $(BEXES)
 
-TOBUILD := dirs afpx preprocess libs exes git texi txt gpr
+TOBUILD := dirs afpx prerequisit preprocess libs exes git texi txt gpr
 
 all : $(TOBUILD) $(HTML)
 
@@ -83,6 +75,21 @@ include $(TEMPLATES)/git.mk
 
 dirs : $(DIRS)
 
+prerequisit :
+	@res=0; \
+	if [ ! -z "$(PREREQS)" ]; then \
+    cd $(LIB); \
+	  $(ADA) $(SPREREQS)  $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
+    cd ..; \
+	  $(MAKE) $(NOPRTDIR) -s $(BPREREQS); \
+	  if [ $$? -ne 0 ] ; then \
+	    res=1; \
+	  fi; \
+	  for file in $(PREREQS) ; do \
+	    $(LN) -f $(BIN)/$$file .; \
+	  done; \
+	fi; \
+	exit $$res
 
 # Static and dynamic exe
 $(BIN)/%.stat : $(DIRS) $(LIB)/%.o %.adb
@@ -157,7 +164,7 @@ endif
 	@$(PREPROCESSOR) < $< > $@	
 
 %.adb : %.apb
-	@$(ECHO) APP $(PARGS_$<) $<
+	@$(ECHO) APP $(PARGS) $(PARGS_$<) $<
 	$(PREPROCESSOR) < $< > $@	
 
 lsunits : preprocess
