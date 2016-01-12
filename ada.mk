@@ -48,11 +48,15 @@ ifdef NOFILTER
 ADA_FILTER :=
 endif
 
-PREPROCESSOR = app '--prefix=--\#' $(PARGS) $(PARGS_$<)
 
 include $(TEMPLATES)/units.mk
 LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
+
+PREPROCESSOR = app '--prefix=--\#' $(PARGS) $(PARGS_$<)
 PREPROC := $(wildcard *.aps *.apb)
+ifdef PREPROC
+PREREQS := app
+endif
 
 BEXES := $(EXES:%=$(BIN)/%)
 BPREREQS := $(PREREQS:%=$(BIN)/%)
@@ -78,9 +82,9 @@ dirs : $(DIRS)
 prerequisit :
 	@res=0; \
 	if [ ! -z "$(PREREQS)" ]; then \
-    cd $(LIB); \
+	cd $(LIB); \
 	  $(ADA) $(SPREREQS)  $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
-    cd ..; \
+	cd ..; \
 	  $(MAKE) $(NOPRTDIR) -s $(BPREREQS); \
 	  if [ $$? -ne 0 ] ; then \
 	    res=1; \
