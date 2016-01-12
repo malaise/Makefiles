@@ -54,8 +54,11 @@ LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
 
 PREPROCESSOR = app '--prefix=--\#' $(PARGS) $(PARGS_$<)
 PREPROC := $(wildcard *.aps *.apb)
+APP := $(wildcard app.adb)
 ifdef PREPROC
+ifdef APP
 PREREQS := app
+endif
 endif
 
 BEXES := $(EXES:%=$(BIN)/%)
@@ -83,7 +86,7 @@ prerequisit :
 	@res=0; \
 	if [ ! -z "$(PREREQS)" ]; then \
 	cd $(LIB); \
-	  $(ADA) $(SPREREQS)  $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
+	  $(ADA) $(SPREREQS) $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
 	cd ..; \
 	  $(MAKE) $(NOPRTDIR) -s $(BPREREQS); \
 	  if [ $$? -ne 0 ] ; then \
