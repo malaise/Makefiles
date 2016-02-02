@@ -52,7 +52,7 @@ endif
 include $(TEMPLATES)/units.mk
 LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
 
-PREPROCESSOR = app '--prefix=--\#' $(PARGS) $(PARGS_$<)
+PREPROCESSOR = ./app '--prefix=--\#' $(PARGS) $(PARGS_$<)
 PREPROC := $(wildcard *.aps *.apb)
 APP := $(wildcard app.adb)
 ifdef PREPROC
@@ -112,7 +112,6 @@ $(BIN)/% : $(DIRS) $(LIB)/%.o %.adb
 	$(GNATMAKE) ../$(@F) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
 	  -cargs $(CARGS_$(@F)) $(CARGS) \
-	  -bargs -shared \
 	  -largs $(CPATHL) $(LARGS_$(@F)) $(LARGS) \
            $(CLIBS_$(@F):%=-l%) $(CLIBS:%=-l%) -lm $(ADA_FILTER)
 
