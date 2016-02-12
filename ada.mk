@@ -27,8 +27,8 @@ ifdef HTML
 HTML           = html
 endif
 
-ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim -v ARCH=$$ARCH ' \
-  BEGIN {code=0; LLIB="-L/lib/"ARCH} \
+ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim ' \
+  BEGIN {code=0} \
   function strip(file,suff) {gsub(suff,"",file); return file} \
   ($$0 ~ /gnatmake: .+ up to date./) {next} \
   ($$2 == "warning:") {print; next} \
@@ -37,7 +37,15 @@ ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim -v ARCH=$$ARCH
   } \
   ($$1 == "gnatbind") {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
   ($$1 == "gnatlink") { \
-    if ($$(NF-1) != LLIB) {printf "LINK %s\n",strip($$2,"\\.ali")} \
+    for (i = 1; i <= NF; i++) { \
+      if ($$i == "-o") { \
+        TARGET=$$(i+1); \
+        break; \
+      }; \
+    }; \
+    I = match(TARGET, ".stat"); \
+    if (I != (length(TARGET)-length(".stat")+1)) {I = 0}; \
+    if (I == 0) {printf "LINK %s\n",strip($$2,"\\.ali")} \
     else {printf "LINK_STATIC %s\n",strip($$2,"\\.ali")} \
     next \
   } \
