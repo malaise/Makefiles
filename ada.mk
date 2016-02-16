@@ -65,7 +65,7 @@ PREPROC := $(wildcard *.aps *.apb)
 APP := $(wildcard app.adb)
 ifdef PREPROC
 ifdef APP
-PREREQS := app
+PREREQS := $(PREREQS) app
 endif
 endif
 
