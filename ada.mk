@@ -74,10 +74,10 @@ BPREREQS := $(PREREQS:%=$(BIN)/%)
 SPREREQS := $(PREREQS:%=../%.adb)
 
 .SUFFIXES : .ads .adb .aps .apb .o .ali .stat
-.PHONY : all preprocess prerequisit libs echoadaview lsunits nohtml
+.PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits nohtml
 .SECONDARY : $(DIRS) $(BEXES)
 
-TOBUILD := dirs afpx prerequisit preprocess libs exes git texi txt gpr
+TOBUILD := dirs prerequisit preprocess afpx libs exes git texi txt gpr
 
 all : $(TOBUILD) $(HTML)
 
@@ -181,15 +181,11 @@ endif
 	@$(ECHO) APP $(PARGS) $(PARGS_$<) $<
 	$(PREPROCESSOR) < $< > $@	
 
-lsunits : preprocess
-	@for file in *.ads ; do \
-	  $(ECHO) `basename $$file .ads`; \
-	done; \
-	for file in *.adb; do \
-	  if [ ! -f `basename $$file .adb`.ads ] ; then \
-	    $(ECHO) `basename $$file .adb`; \
-	  fi; \
-	done
+lsunits : 
+	@echo $(UNITS)
+
+lssubunits :
+	@echo $(SUBUNITS)
 
 # Make a stub of body from spec
 %.adb : %.ads
