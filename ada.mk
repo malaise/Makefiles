@@ -24,7 +24,7 @@ CARGS          := $(CARGS) -pipe
 LARGS          := $(LARGS) -L/usr/local/lib -L/lib/$(ARCH)
 
 ifdef HTML
-HTML           = html
+HTML           := html
 endif
 
 ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim ' \

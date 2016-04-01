@@ -60,7 +60,7 @@ TEXI_TARGETS := $(TEXI:=.info) $(TEXI:=.text)
 .SUFFIXES : .texi .info .text
 texi: $(TEXI_TARGETS)
 
-WIDTH = 78
+WIDTH := 78
 
 %.info : %.texi
 	@echo DOC
