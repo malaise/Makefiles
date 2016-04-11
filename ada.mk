@@ -93,9 +93,9 @@ dirs : $(DIRS)
 prerequisit :
 	@res=0; \
 	if [ ! -z "$(PREREQS)" ]; then \
-	cd $(LIB); \
+	  cd $(LIB); \
 	  $(ADA) $(SPREREQS) $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
-	cd ..; \
+	  cd ..; \
 	  $(MAKE) $(NOPRTDIR) -s $(BPREREQS); \
 	  if [ $$? -ne 0 ] ; then \
 	    res=1; \
