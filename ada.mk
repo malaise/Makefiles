@@ -15,13 +15,13 @@ GNATSTUBFLAG   := $(GNATSTUBFLAG) -gnaty2 -q
 GNATSTUBPOST   := -cargs -gnat2012
 GNATHTMLOPT    ?= -d
 
-GNATHTML       := $(GNATPATH)/gnathtml.pl $(GNATHTMLFLAG)
+GNATHTML       := $(wildcard $(GNATPATH)/gnathtml) $(wildcard $(GNATPATH)/gnathtml.pl)  $(GNATHTMLFLAG)
 GNATMAKE       := $(GNATPATH)/gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
 GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
-LARGS          := $(LARGS) -L/usr/local/lib -L/lib/$(ARCH)
+LARGS          := $(LARGS) -L/usr/local/lib
 
 ifdef HTML
 HTML           := html
@@ -32,11 +32,11 @@ ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim ' \
   function strip(file,suff) {gsub(suff,"",file); return file} \
   ($$0 ~ /gnatmake: .+ up to date./) {next} \
   ($$2 == "warning:") {print; next} \
-  ($$1 == "gcc" && $$2 == "-c" ) { \
+  ($$1 ~ /gcc(-.)?/ && $$2 == "-c" ) { \
     printf "ADA %s %s %s \n",ADAOPT,OPTIM,strip($$NF,"\\.\\./"); next \
   } \
-  ($$1 == "gnatbind") {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
-  ($$1 == "gnatlink") { \
+  ($$1 ~ /gnatbind(-.)?/) {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
+  ($$1 ~ /gnatlink(-.)?/) { \
     for (i = 1; i <= NF; i++) { \
       if ($$i == "-o") { \
         TARGET=$$(i+1); \
