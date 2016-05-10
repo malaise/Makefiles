@@ -4,7 +4,7 @@ REPOSIT   := $(ADAPATH)/reposit
 USR       := $(ADAPATH)/usr
 GNATPATH  ?= /usr/local/gnat/bin
 
-PCRE ?= PCRE1
+PCRE ?= PCRE2
 CFLAGS    := -D$(PCRE)
 ifeq ($(PCRE),PCRE0)
 PCRE_CFG  := pcre-config
