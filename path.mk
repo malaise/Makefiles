@@ -14,7 +14,7 @@ PCRE_CFG  := pcre-config
 PCRE_LIBS := pcreposix pcre
 else
 PCRE_CFG  := pcre2-config
-PCRE_LIBS := pcre2-posix pcre2-8
+PCRE_LIBS := pcre2-8
 endif
 PCRE_INCL := `$(PCRE_CFG) --cflags`
 PCRE_LIB  := `$(PCRE_CFG) --prefix`/lib/$(ARCH)
