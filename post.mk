@@ -1,6 +1,6 @@
 CLEAN_EXES := $(EXES:%=clean_%) $(PREREQS:%=clean_%)
 .PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
-         scratch clean_html texi txt clean_texi clean_txt gpr
+         scratch clean_html texi txt clean_texi clean_txt gpr clean_adacontrol adacontrol
 
 # Sub dirs
 ifdef BIN
@@ -30,7 +30,8 @@ $(PREREQS) : $(BPREREQS)
 	@$(LN) $(BIN)/$@
 endif
 
-
+# Something to do only of Ada sources
+ifdef ADASRC
 # Afpx stuff
 ifeq ($(AFPX),true)
 ifdef AFPX_XREF
@@ -54,6 +55,46 @@ afpx :;
 clean_afpx :;
 
 endif
+
+# Html stuff
+clean_html :
+	@if [ -d html ] ; then \
+	  $(ECHO) RM html; \
+	  $(RM) -r html; \
+	fi
+
+html : $(wildcard *.ad?)
+	@$(MAKE) clean_html
+	@echo HTML
+	@$(GNATHTML) $(GNATHTMLOPT) *.ad? > /dev/null
+
+# Ada control stuff
+clean_adactl :
+	@ada_control -C
+
+adactl :
+	@ada_control
+
+# Make gps project
+gpr :
+ifdef ADAVIEW
+	@SRCS="@.@"; \
+	for dir in $(ADAVIEW) ; do \
+	  SRCS="$$SRCS, @$$dir@"; \
+	done; \
+	$(ECHO) -e "project Ada is\n  for Source_Dirs use ("$$SRCS");\nend Ada;" \
+	  | $(SED) -e 's/@/"/g' > ada.gpr
+endif
+
+clean_gpr :
+ifdef ADAVIEW
+	@$(RM) ada.gpr
+endif
+
+else
+afpx clean_afpx html clean_html adactl clean_adactl gpr clean_gpr :
+	@echo -n ""
+endif # ADASRC
 
 ifdef TEXI
 TEXI_TARGETS := $(TEXI:=.info) $(TEXI:=.text)
@@ -118,34 +159,6 @@ new : clean_exe
 
 scratch : clean_all
 	@$(MAKE)  $(NOPRTDIR)
-
-# Html stuff
-clean_html :
-	@if [ -d html ] ; then \
-	  $(ECHO) RM html; \
-	  $(RM) -r html; \
-	fi
-
-html : $(wildcard *.ad?)
-	@$(MAKE) clean_html
-	@echo HTML
-	@$(GNATHTML) $(GNATHTMLOPT) *.ad? > /dev/null
-
-# Make gps project
-gpr :
-ifdef ADAVIEW
-	@SRCS="@.@"; \
-	for dir in $(ADAVIEW) ; do \
-	  SRCS="$$SRCS, @$$dir@"; \
-	done; \
-	$(ECHO) -e "project Ada is\n  for Source_Dirs use ("$$SRCS");\nend Ada;" \
-	  | $(SED) -e 's/@/"/g' > ada.gpr
-endif
-
-clean_gpr :
-ifdef ADAVIEW
-	@$(RM) ada.gpr
-endif
 
 # Include any local makefile: cdep.mk...
 LOCAL_MAKEFILES := $(wildcard *.mk)

@@ -74,6 +74,8 @@ BEXES := $(EXES:%=$(BIN)/%)
 BPREREQS := $(PREREQS:%=$(BIN)/%)
 SPREREQS := $(PREREQS:%=../%.adb)
 
+ADASRC = TRUE
+
 .SUFFIXES : .ads .adb .aps .apb .o .ali .stat
 .PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits nohtml
 .SECONDARY : $(DIRS) $(BEXES)
@@ -82,7 +84,7 @@ TOBUILD := dirs prerequisit preprocess afpx libs exes git texi txt gpr
 
 all : $(TOBUILD) $(HTML)
 
-clean_all : clean clean_exe clean_afpx clean_html clean_texi clean_txt
+clean_all : clean clean_exe clean_afpx clean_html clean_texi clean_txt clean_adactl
 
 nohtml : $(TOBUILD)
 
