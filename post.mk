@@ -69,11 +69,16 @@ html : $(wildcard *.ad?)
 	@$(GNATHTML) $(GNATHTMLOPT) *.ad? > /dev/null
 
 # Ada control stuff
+ifndef NO_ADACTL
 clean_adactl :
 	@ada_control -C
 
 adactl :
 	@ada_control
+else
+adactl clean_adactl :
+	@echo -n ""
+endif
 
 # Make gps project
 gpr :
