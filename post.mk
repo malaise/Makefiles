@@ -3,31 +3,10 @@ CLEAN_EXES := $(EXES:%=clean_%) $(PREREQS:%=clean_%)
          scratch clean_html texi txt clean_texi clean_txt gpr clean_adacontrol adacontrol
 
 # Sub dirs
-ifdef BIN
-$(BIN) :
-	@$(ECHO) MKDIR $@
-	@$(MKDIR) $@
-endif
 ifdef LIB
 $(LIB) :
 	@$(ECHO) MKDIR $@
 	@$(MKDIR) $@
-endif
-
-# Local exes
-ifdef EXES
-% : $(BIN)/%
-	@$(LN) $< $@
-
-$(EXES) : $(BEXES)
-	@$(LN) $(BIN)/$@
-endif
-ifdef PREREQS
-% : $(BIN)/%
-	@$(LN) $< $@
-
-$(PREREQS) : $(BPREREQS)
-	@$(LN) $(BIN)/$@
 endif
 
 # Something to do only of Ada sources
@@ -149,12 +128,11 @@ ifdef PREPROC
 endif
 
 clean_exe : clean_git
-	@$(ECHO) RM $(BIN) EXEs
-	@$(RM) -r $(BIN)
+	@$(ECHO) RM EXEs
 	@$(RM) $(EXES) $(PREREQS)
 
 $(CLEAN_EXES) :
-	@$(RM) $(LIB)/$(@:clean_%=%).o $(BIN)/$(@:clean_%=%) $(@:clean_%=%) 
+	@$(RM) $(LIB)/$(@:clean_%=%).o $(@:clean_%=%) $(@:clean_%=%) 
 	@if [ -f $(LIB)/$(@:clean_%=%).ali ] ; then \
 	  $(RM) $(LIB)/$(@:clean_%=%).ali; \
 	fi

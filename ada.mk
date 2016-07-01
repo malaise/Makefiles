@@ -70,15 +70,13 @@ PREREQS := $(PREREQS) app
 endif
 endif
 
-BEXES := $(EXES:%=$(BIN)/%)
-BPREREQS := $(PREREQS:%=$(BIN)/%)
 SPREREQS := $(PREREQS:%=../%.adb)
 
 ADASRC = TRUE
 
 .SUFFIXES : .ads .adb .aps .apb .o .ali .stat
 .PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits nohtml
-.SECONDARY : $(DIRS) $(BEXES)
+.SECONDARY : $(DIRS)
 
 TOBUILD := dirs prerequisit preprocess afpx libs exes git texi txt gpr
 
@@ -100,18 +98,15 @@ prerequisit :
 	  cd $(LIB); \
 	  $(ADA) $(SPREREQS) $(GARGS) -cargs $(CARGS) $(ADA_FILTER); \
 	  cd ..; \
-	  $(MAKE) $(NOPRTDIR) -s $(BPREREQS); \
+	  $(MAKE) $(NOPRTDIR) -s $(PREREQS); \
 	  if [ $$? -ne 0 ] ; then \
 	    res=1; \
 	  fi; \
-	  for file in $(PREREQS) ; do \
-	    $(LN) -f $(BIN)/$$file .; \
-	  done; \
 	fi; \
 	exit $$res
 
 # Static and dynamic exe
-$(BIN)/%.stat : $(DIRS) $(LIB)/%.o %.adb
+%.stat : $(DIRS) $(LIB)/%.o %.adb
 	@cd $(LIB); \
 	$(GNATMAKE) ../$(@F:%.stat=%) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
@@ -119,7 +114,7 @@ $(BIN)/%.stat : $(DIRS) $(LIB)/%.o %.adb
 	  -bargs -static \
 	  -largs $(LARGS_$(@F)) $(LARGS) -lm $(ADA_FILTER)
 
-$(BIN)/% : $(DIRS) $(LIB)/%.o %.adb
+% : $(DIRS) $(LIB)/%.o %.adb
 	@cd $(LIB); \
 	$(GNATMAKE) ../$(@F) -o ../$@ \
 	  $(GARGS_$(@F)) $(GARGS) \
@@ -153,13 +148,10 @@ libs :
 exes :
 	@res=0; \
 	if [ ! -z "$(EXES)" ]; then \
-	  $(MAKE) $(NOPRTDIR) -s $(BEXES); \
+	  $(MAKE) $(NOPRTDIR) -s $(EXES); \
 	  if [ $$? -ne 0 ] ; then \
 	    res=1; \
 	  fi; \
-	  for file in $(EXES) ; do \
-	    $(LN) -f $(BIN)/$$file .; \
-	  done; \
 	fi; \
 	exit $$res
 

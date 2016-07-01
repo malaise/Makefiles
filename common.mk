@@ -11,9 +11,8 @@ CHMOD_ARX       := /bin/chmod a+rx
 ECHO            := /bin/echo
 SED             := /bin/sed
 
-LIB             := lib_$(HOST)
-BIN             := bin_$(HOST)
-DIRS            := $(LIB) $(BIN)
+LIB             := lib
+DIRS            := $(LIB)
 
 NOPRTDIR        := --no-print-directory
 SILENT          := --silent

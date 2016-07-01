@@ -36,7 +36,6 @@ DINCLD := $(DINCL:%=-I../%) $(DLIBA:%=-I../%)
 DLIBAD := $(foreach dir,$(DLIBA),../$(dir)/$(LIB)/lib$(dir).a)
 
 OEXES  := $(EXES:%=$(LIB)/%.o)
-BEXES  := $(EXES:%=$(BIN)/%)
 ALIBS  := $(LIBS:%=$(LIB)/%.a)
 SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
@@ -91,7 +90,11 @@ $(LIB)/%.a : $(OBJS)
 	@$(ECHO) AR crs $@ $(patsubst %,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 	@$(AR) crs $@ $(patsubst %,$(LIB)/%.o,$(OBJS_$(@F:%.a=%)))
 
-$(BIN)/% : $(LIB)/%.o $(SOLIBS)
+% : %.c
+
+% : %.cpp
+
+% : $(LIB)/%.o $(SOLIBS)
 	@if [ "$(LIBS_$(@F))" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%.a,$(LIBS_$(@F))); \
 	fi
@@ -122,7 +125,7 @@ $(DEST_LIBS)/%.a : $(LIB)/%.a
 	$(CP) $< $@
 	$(CHMOD_AR) $@
 
-$(DEST_EXES)/% : $(BIN)/%
+$(DEST_EXES)/% : %
 	$(CP) $< $@
 	$(CHMOD_ARX) $@
 
