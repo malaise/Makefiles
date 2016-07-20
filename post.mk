@@ -75,7 +75,7 @@ ifdef ADAVIEW
 	@$(RM) ada.gpr
 endif
 
-else
+else # ADASRC
 afpx clean_afpx html clean_html adactl clean_adactl gpr clean_gpr :
 	@echo -n ""
 endif # ADASRC
@@ -115,7 +115,7 @@ clean_txt : clean_git
 endif
 
 # Clean stuff
-clean : clean_gpr clean_git
+clean : clean_gpr clean_git clean_adactl
 	@$(ECHO) RM $(LIB)
 	@$(RM) -r $(LIB)
 	@$(RM) b~*
