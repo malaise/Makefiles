@@ -61,7 +61,7 @@ endif
 include $(TEMPLATES)/units.mk
 LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
 
-PREPROCESSOR = app '--prefix=--\#' $(PARGS) $(PARGS_$<)
+PREPROCESSOR = app '--prefix=--\#@' $(PARGS) $(PARGS_$<)
 PREPROC := $(wildcard *.aps *.apb)
 APP := $(wildcard app.adb)
 ifdef PREPROC
