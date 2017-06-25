@@ -22,7 +22,7 @@ GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
-LARGS          := $(LARGS) -L/usr/local/lib
+LARGS          := $(LARGS) -L/usr/local/lib -L/lib/$(ARCH)
 
 ifdef HTML
 HTML           := html
