@@ -7,7 +7,7 @@ endif
 ADAWARN        ?= true
 ifeq ($(ADAWARN),true)
 ADAFLAG        := $(ADAFLAG) -gnatwa -gnatwb -gnatwc -gnatw.c -gnatwf -gnatwg -gnatw.i -gnatwj -gnatwk -gnatwm -gnatw.n -gnatwp -gnatw.p -gnatwr -gnatwu -gnatw.x\
-			     -Wunused -Wuninitialized 
+			     -gnatyO -Wunused -Wuninitialized 
 endif
 
 GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -fstack-check -gnat2012
