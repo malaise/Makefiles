@@ -59,7 +59,8 @@ endif
 
 
 include $(TEMPLATES)/units.mk
-LIBS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(UNITS))
+UNITS := $(filter-out $(SUBUNITS) $(NOTUNITS), $(ALLUNITS))
+LIBS := $(subst .,-,$(UNITS))
 
 PREPROCESSOR = app '--prefix=--\#@' $(PARGS) $(PARGS_$<)
 PREPROC := $(wildcard *.aps *.apb)
@@ -75,7 +76,7 @@ SPREREQS := $(PREREQS:%=../%.adb)
 ADASRC = TRUE
 
 .SUFFIXES : .ads .adb .aps .apb .o .ali .stat
-.PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits nohtml
+.PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits lsallunits nohtml
 .SECONDARY : $(DIRS)
 
 TOBUILD := dirs prerequisit preprocess afpx libs exes git texi txt gpr
@@ -182,6 +183,9 @@ lsunits :
 
 lssubunits :
 	@echo $(SUBUNITS)
+
+lsallunits : 
+	@echo $(ALLUNITS)
 
 # Make a stub of body from spec
 %.adb : %.ads
