@@ -19,6 +19,8 @@ GNATHTMLOPT    ?= -d
 GNATHTML       := $(wildcard $(GNATPATH)/gnathtml) $(wildcard $(GNATPATH)/gnathtml.pl)  $(GNATHTMLFLAG)
 GNATMAKE       := $(GNATPATH)/gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
 GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
+GNATMETRIC     := $(GNATPATH)/gnatmetric -q -sfn --complexity-cyclomatic
+CYCLOMAX       ?= 50
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
@@ -76,7 +78,7 @@ SPREREQS := $(PREREQS:%=../%.adb)
 ADASRC = TRUE
 
 .SUFFIXES : .ads .adb .aps .apb .o .ali .stat
-.PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits lsallunits nohtml
+.PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits lsallunits nohtml metrics
 .SECONDARY : $(DIRS)
 
 TOBUILD := dirs prerequisit preprocess afpx libs exes git texi txt gpr
@@ -201,4 +203,26 @@ lsallunits :
 
 echoadaview :
 	@$(ECHO) $(ADAVIEW)
+
+metrics :
+	@rm -f *.adb.metrix
+	@$(GNATMETRIC) *.adb -cargs $(ADAVIEW:%=-I %)
+	@awk -v CYCLOMAX=$(CYCLOMAX) ' \
+          BEGIN {NAME=""} \
+	  ($$1 == "Metrics" && $$2 == "computed" && $$3 == "for") { \
+            print $$4; \
+            next; \
+          } \
+          (NF >= 7 && $$(NF-3) == "at" && $$(NF-2) == "lines") { \
+            NAME=$$1 " (" $$(NF-1)$$(NF); \
+            next; \
+          } \
+          ($$1 == "cyclomatic" && $$2 == "complexity" \
+           && $$3 ==":" && NAME != "" && $$4 >= CYCLOMAX) { \
+            printf "  " NAME " " $$4 "\n"; \
+            NAME=""; \
+            next; \
+          } \
+	' *.adb.metrix
+	@rm -f *.adb.metrix
 
