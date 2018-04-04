@@ -143,6 +143,9 @@ new : clean_exe
 scratch : clean_all
 	@$(MAKE)  $(NOPRTDIR)
 
+
+metrics :
+
 # Include any local makefile: cdep.mk...
 LOCAL_MAKEFILES := $(wildcard *.mk)
 ifneq ($(LOCAL_MAKEFILES),)

@@ -209,8 +209,9 @@ metrics :
 	@$(GNATMETRIC) *.adb -cargs $(ADAVIEW:%=-I %)
 	@awk -v CYCLOMAX=$(CYCLOMAX) ' \
           BEGIN {NAME=""} \
-	  ($$1 == "Metrics" && $$2 == "computed" && $$3 == "for") { \
-            print $$4; \
+          ($$1 == "Metrics" && $$2 == "computed" && $$3 == "for") { \
+            FILE=$$4; \
+            FILEPUT=0; \
             next; \
           } \
           (NF >= 7 && $$(NF-3) == "at" && $$(NF-2) == "lines") { \
@@ -219,10 +220,14 @@ metrics :
           } \
           ($$1 == "cyclomatic" && $$2 == "complexity" \
            && $$3 ==":" && NAME != "" && $$4 >= CYCLOMAX) { \
+            if (FILEPUT == 0) { \
+              printf FILE "\n"; \
+              FILEPUT=1; \
+            } \
             printf "  " NAME " " $$4 "\n"; \
             NAME=""; \
             next; \
           } \
-	' *.adb.metrix
+        ' *.adb.metrix
 	@rm -f *.adb.metrix
 

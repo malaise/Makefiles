@@ -2,7 +2,7 @@ ifneq ($(LOCAL_DIR),true)
 # Normal invocation: local then recursive
 TARGETS := all afpx echoadaview clean clean_exe clean_afpx clean_all \
            new scratch install dep clean_dep html clean_html \
-           adactl clean_adactl texi txt clean_texi clean_txt gpr
+           adactl clean_adactl texi txt clean_texi clean_txt gpr metrics
 .PHONY : $(SUBDIRS) $(TARGETS) local
 
 $(TARGETS) :
@@ -18,8 +18,6 @@ clean_all : clean_texi clean_txt clean_git
 include $(TEMPLATES)/post.mk
 include $(TEMPLATES)/git.mk
 endif
-
-
 
 local :
 	$(MAKE) LOCAL_DIR=true
