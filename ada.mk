@@ -19,8 +19,8 @@ GNATHTMLOPT    ?= -d
 GNATHTML       := $(wildcard $(GNATPATH)/gnathtml) $(wildcard $(GNATPATH)/gnathtml.pl)  $(GNATHTMLFLAG)
 GNATMAKE       := $(GNATPATH)/gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
 GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
-GNATMETRIC     := $(GNATPATH)/gnatmetric -q -sfn --complexity-cyclomatic
-CYCLOMAX       ?= 50
+GNATMETRIC     := $(GNATPATH)/gnatmetric -q -sfn --construct-nesting
+NESTMAX        ?= 5
 ADA            := $(GNATMAKE) -c
 
 CARGS          := $(CARGS) -pipe
@@ -207,7 +207,7 @@ echoadaview :
 metrics :
 	@rm -f *.adb.metrix
 	@$(GNATMETRIC) *.adb -cargs $(ADAVIEW:%=-I %)
-	@awk -v CYCLOMAX=$(CYCLOMAX) ' \
+	@awk -v MAX=$(NESTMAX) ' \
           BEGIN {NAME=""} \
           ($$1 == "Metrics" && $$2 == "computed" && $$3 == "for") { \
             FILE=$$4; \
@@ -218,8 +218,8 @@ metrics :
             NAME=$$1 " (" $$(NF-1)$$(NF); \
             next; \
           } \
-          ($$1 == "cyclomatic" && $$2 == "complexity" \
-           && $$3 ==":" && NAME != "" && $$4 >= CYCLOMAX) { \
+          ($$1 == "maximal" && $$2 == "construct" \
+           && $$3 =="nesting:" && NAME != "" && $$4 > MAX) { \
             if (FILEPUT == 0) { \
               printf FILE "\n"; \
               FILEPUT=1; \
