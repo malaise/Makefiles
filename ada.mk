@@ -208,13 +208,14 @@ metrics :
 	@rm -f *.adb.metrix
 	@$(GNATMETRIC) *.adb -cargs $(ADAVIEW:%=-I %)
 	@awk -v MAX=$(NESTMAX) ' \
-          BEGIN {NAME=""} \
+          (FNR == 1) {NAME=""} \
           ($$1 == "Metrics" && $$2 == "computed" && $$3 == "for") { \
             FILE=$$4; \
             FILEPUT=0; \
             next; \
           } \
-          (NF >= 7 && $$(NF-3) == "at" && $$(NF-2) == "lines") { \
+          (NF >= 7 && $$2 != "(package" && $$(NF-3) == "at" \
+           && $$(NF-2) == "lines") { \
             NAME=$$1 " (" $$(NF-1)$$(NF); \
             next; \
           } \
