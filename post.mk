@@ -48,7 +48,7 @@ html : $(wildcard *.ad?)
 	@$(GNATHTML) $(GNATHTMLOPT) *.ad? > /dev/null
 
 # Ada control stuff
-ifdef ADACTL
+ifeq ($(ADACTL),true)
 clean_adactl :
 	@ada_control -C
 
