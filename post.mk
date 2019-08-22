@@ -53,7 +53,7 @@ clean_adactl :
 	@ada_control -C
 
 adactl :
-	@ada_control
+	@export ADACTL_EXCL=$(ADACTL_EXCL) && ada_control
 else
 adactl clean_adactl :
 	@echo -n ""
