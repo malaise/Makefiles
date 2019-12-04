@@ -36,3 +36,5 @@ UTILS_ALIBS := $(CPATHD)/libcutil.a
 X11_SLIBS := x_mng $(UTILS_SLIBS) Xpm X11
 X11_ALIBS := $(CPATHD)/libx_mng.a $(UTILS_ALIBS) -lXpm -lX11
 
+CARDS_SLIBS := cards Xext
+CARDS_ALIBS := $(CPATHD)/libcards.a -lXext
