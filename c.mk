@@ -43,7 +43,7 @@ OBJS := $(patsubst %.c,$(LIB)/%.o,$(wildcard *.c))
 
 
 .SUFFIXES : .h .c .hpp .cpp .o .a .so
-.PHONY : all install dep clean_dep
+.PHONY : all install dep clean_dep clean_installed
 .SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS) $(OBJS)
 
 ifdef LINKFROM
@@ -141,6 +141,9 @@ $(CDEP) : $(wildcard *.c *.cpp *.h *.hpp)
 
 clean_dep : clean_git
 	@$(RM) $(CDEP)
+
+clean_installed :
+	@$(RM) $(INSTALLED)
 
 include $(TEMPLATES)/post.mk
 include $(TEMPLATES)/git.mk
