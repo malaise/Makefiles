@@ -35,11 +35,12 @@ ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim ' \
   function strip(file,suff) {gsub(suff,"",file); return file} \
   ($$0 ~ /gnatmake: .+ up to date.$$/) {next} \
   ($$2 == "warning:") {print; next} \
-  ($$1 ~ /gcc(-.)?$$/ && $$2 == "-c" ) { \
+  ($$2 == "info:") {next} \
+  ($$1 ~ /(.*gnu-)?gcc(-.+)?$$/ && $$2 == "-c" ) { \
     printf "ADA %s %s %s \n",ADAOPT,OPTIM,strip($$NF,"\\.\\./"); next \
   } \
-  ($$1 ~ /gnatbind(-.)?$$/) {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
-  ($$1 ~ /gnatlink(-.)?$$/) { \
+  ($$1 ~ /(.*gnu-)?gnatbind(-.+)?$$/) {printf "BIND %s\n",strip($$NF,"\\.ali"); next} \
+  ($$1 ~ /(.*gnu-)?gnatlink(-.+)?$$/) { \
     for (i = 1; i <= NF; i++) { \
       if ($$i == "-o") { \
         TARGET=$$(i+1); \
