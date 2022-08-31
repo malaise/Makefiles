@@ -34,7 +34,10 @@ ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim ' \
   BEGIN {code=0} \
   function strip(file,suff) {gsub(suff,"",file); return file} \
   ($$0 ~ /gnatmake: .+ up to date.$$/) {next} \
-  ($$2 == "warning:") {print; next} \
+  ($$2 == "warning:") { \
+     if ($$5 != "GNU_PROPERTY_TYPE") {print} \
+     next; \
+   } \
   ($$2 == "info:") {next} \
   ($$1 ~ /(.*gnu-)?gcc(-.+)?$$/ && $$2 == "-c" ) { \
     printf "ADA %s %s %s \n",ADAOPT,OPTIM,strip($$NF,"\\.\\./"); next \
