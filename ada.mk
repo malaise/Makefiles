@@ -193,6 +193,10 @@ lssubunits :
 lsallunits : 
 	@echo $(ALLUNITS)
 
+lsexes : 
+	@echo $(EXES)
+
+
 # Make a stub of body from spec
 %.adb : %.ads
 	@if [ ! -f $@ ] ; then \
