@@ -94,7 +94,7 @@ $(LIB)/%.a : $(OBJS)
 
 % : %.cpp
 
-% : $(LIB)/%.o $(SOLIBS)
+% : $(LIB)/%.o $(SOLIBS) $(DLIBAD)
 	@if [ "$(LIBS_$(@F))" != "" ]; then \
 	  $(MAKE) $(NOPRTDIR) $(patsubst %,$(LIB)/%.a,$(LIBS_$(@F))); \
 	fi
