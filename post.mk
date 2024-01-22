@@ -1,6 +1,7 @@
 CLEAN_EXES := $(EXES:%=clean_%) $(PREREQS:%=clean_%)
 .PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
-         scratch clean_html texi txt clean_texi clean_txt gpr clean_adacontrol adacontrol
+         scratch clean_html texi txt clean_texi clean_txt test gpr \
+         clean_adacontrol adacontrol
 
 # Sub dirs
 ifdef LIB
@@ -113,6 +114,11 @@ txt: $(TXT_TARGETS)
 clean_txt : clean_git
 	@rm -f $(TXT_TARGETS)
 endif
+
+test :
+	@if [ -f Test ] ; then \
+	  ./Test; \
+	fi
 
 # Clean stuff
 clean : clean_gpr clean_git clean_adactl
