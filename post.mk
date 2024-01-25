@@ -115,10 +115,12 @@ clean_txt : clean_git
 	@rm -f $(TXT_TARGETS)
 endif
 
+ifndef TEST
 test :
 	@if [ -f Test ] ; then \
 	  ./Test; \
 	fi
+endif
 
 # Clean stuff
 clean : clean_gpr clean_git clean_adactl

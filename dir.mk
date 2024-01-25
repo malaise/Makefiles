@@ -12,9 +12,11 @@ ifneq ($(SUBDIRS),)
 endif
 else
 # Local targets
-.PHONY : all clean_all
+.PHONY : all clean_all test
 all : texi txt git
 clean_all : clean_texi clean_txt clean_git
+TEST := NONE
+test :
 include $(TEMPLATES)/post.mk
 include $(TEMPLATES)/git.mk
 endif
