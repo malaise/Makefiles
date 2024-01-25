@@ -1,6 +1,6 @@
 CLEAN_EXES := $(EXES:%=clean_%) $(PREREQS:%=clean_%)
 .PHONY : afpx clean_afpx clean clean_exe $(CLEAN_EXES) clean_all new \
-         scratch clean_html texi txt clean_texi clean_txt test gpr \
+         scratch clean_html texi txt clean_texi clean_txt test clean_test gpr \
          clean_adacontrol adacontrol
 
 # Sub dirs
@@ -119,6 +119,10 @@ ifndef TEST
 test :
 	@if [ -f Test ] ; then \
 	  ./Test; \
+	fi
+clean_test :
+	@if [ -f Test ] ; then \
+	  ./Test clean; \
 	fi
 endif
 
