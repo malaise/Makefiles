@@ -16,7 +16,6 @@ else
 .PHONY : all clean_all test clean_test
 all : texi txt git
 clean_all : clean_texi clean_txt clean_git
-TEST := NONE
 test :
 clean_test :
 include $(TEMPLATES)/post.mk
