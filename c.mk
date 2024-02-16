@@ -135,9 +135,15 @@ install : $(INSTALLED)
 dep dep : $(CDEP)
 
 $(CDEP) : $(wildcard *.c *.cpp *.h *.hpp)
-	@$(CC) $(DINCLD) -MM `ls *.c *.cpp 2> /dev/null` 2>/dev/null | awk -v LIB=$(LIB) ' \
+	@$(CC) $(DINCLD) -MM `ls *.c *.cpp 2>/dev/null` 2>&1 | awk -v LIB=$(LIB) ' \
+	  ($$2 == "error:") {print >"/dev/stderr"; exit 1} \
 	  ($$1 ~ /.*\.o/) {print LIB"/"$$0; next} \
-          {print}' > $(CDEP)
+	  {print}' > $(CDEP); \
+	if [ $$? -ne 0 ] ; then \
+	  rm -f $(CDEP); \
+	  exit 1; \
+	fi
+
 
 clean_dep : clean_git
 	@$(RM) $(CDEP)
