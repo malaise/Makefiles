@@ -135,7 +135,12 @@ install : $(INSTALLED)
 dep dep : $(CDEP)
 
 $(CDEP) : $(wildcard *.c *.cpp *.h *.hpp)
-	@$(CC) $(DINCLD) -MM `ls *.c *.cpp 2>/dev/null` 2>&1 | awk -v LIB=$(LIB) ' \
+	@LIST=`ls *.c *.cpp 2>/dev/null`; \
+	if [ -z "$$LIST" ] ; then \
+	  echo "" > $(CDEP); \
+	  exit 0; \
+	fi; \
+	$(CC) $(DINCLD) -w -MM `ls *.c *.cpp 2>/dev/null` 2>&1 | awk -v LIB=$(LIB) ' \
 	  ($$2 == "error:") {print >"/dev/stderr"; exit 1} \
 	  ($$1 ~ /.*\.o/) {print LIB"/"$$0; next} \
 	  {print}' > $(CDEP); \

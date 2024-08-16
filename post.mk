@@ -109,7 +109,7 @@ txt: $(TXT_TARGETS)
 
 %.html : %.txt
 	@echo DOC
-	@asciidoc -a numbered $(DOCOPTS_$(*F)) -o $@ $<
+	@asciidoc -a numbered $(DOCOPTS_$(*F)) -o $@ $< 2>&1 | grep -Ev "^<unknown>:1: SyntaxWarning: invalid escape sequence .*" & exit 0
 
 clean_txt : clean_git
 	@rm -f $(TXT_TARGETS)

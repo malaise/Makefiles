@@ -1,7 +1,6 @@
 ifdef ADAVIEW
 GNATMAKEFLAG   := $(patsubst %,-aI%,$(ADAVIEW)) $(patsubst %,-aO%/$(LIB),$(ADAVIEW))
 GNATHTMLFLAG   := $(patsubst %,-I%,$(ADAVIEW))
-GNATSTUBFLAG   := $(patsubst %,-I%,$(ADAVIEW))
 endif
 
 ADAWARN        ?= true
@@ -12,14 +11,10 @@ endif
 
 GNATMAKEFLAG   := $(GNATMAKEFLAG) -gnato -fstack-check -gnat2012
 GNATHTMLFLAG   := -I$(LIB) $(GNATHTMLFLAG)
-GNATSTUBFLAG   := $(GNATSTUBFLAG) -gnaty2 -q
-GNATSTUBPOST   := -cargs -gnat2012
 GNATHTMLOPT    ?= -d
 
-GNATHTML       := $(wildcard $(GNATPATH)/gnathtml) $(wildcard $(GNATPATH)/gnathtml.pl)  $(GNATHTMLFLAG)
-GNATMAKE       := $(GNATPATH)/gnatmake $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
-GNATSTUB       := $(GNATPATH)/gnatstub $(GNATSTUBFLAG)
-GNATMETRIC     := $(GNATPATH)/gnatmetric -q -sfn --construct-nesting
+GNATHTML       := $(wildcard $(GNATPATH)/gnathtml$(GNAT_SUFFIX)) $(wildcard $(GNATPATH)/gnathtml.pl)  $(GNATHTMLFLAG)
+GNATMAKE       := $(GNATPATH)/gnatmake$(GNAT_SUFFIX) $(GNATMAKEFLAG) $(ADAOPT) $(ADAFLAG)
 NESTMAX        ?= 5
 ADA            := $(GNATMAKE) -c
 
@@ -33,7 +28,7 @@ endif
 ADA_FILTER     := 2>&1 | awk -v ADAOPT=$(ADAOPT) -v OPTIM=$$optim ' \
   BEGIN {code=0} \
   function strip(file,suff) {gsub(suff,"",file); return file} \
-  ($$0 ~ /gnatmake: .+ up to date.$$/) {next} \
+  ($$0 ~ /gnatmake$(GNAT_SUFFIX): .+ up to date.$$/) {next} \
   ($$2 == "warning:") { \
      if ($$5 != "GNU_PROPERTY_TYPE") {print} \
      next; \
@@ -82,7 +77,7 @@ SPREREQS := $(PREREQS:%=../%.adb)
 ADASRC = TRUE
 
 .SUFFIXES : .ads .adb .aps .apb .o .ali .stat
-.PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits lsallunits nohtml metrics
+.PHONY : all preprocess prerequisit libs echoadaview lsunits lssubunits lsallunits nohtml
 .SECONDARY : $(DIRS)
 
 TOBUILD := dirs prerequisit preprocess afpx libs exes git texi txt gpr
@@ -212,31 +207,4 @@ lsexes :
 echoadaview :
 	@$(ECHO) $(ADAVIEW)
 
-metrics :
-	@rm -f *.adb.metrix
-	@$(GNATMETRIC) *.adb -cargs $(ADAVIEW:%=-I %)
-	@awk -v MAX=$(NESTMAX) ' \
-          (FNR == 1) {NAME=""} \
-          ($$1 == "Metrics" && $$2 == "computed" && $$3 == "for") { \
-            FILE=$$4; \
-            FILEPUT=0; \
-            next; \
-          } \
-          (NF >= 7 && $$2 != "(package" && $$(NF-3) == "at" \
-           && $$(NF-2) == "lines") { \
-            NAME=$$1 " (" $$(NF-1)$$(NF); \
-            next; \
-          } \
-          ($$1 == "maximal" && $$2 == "construct" \
-           && $$3 =="nesting:" && NAME != "" && $$4 > MAX) { \
-            if (FILEPUT == 0) { \
-              printf FILE "\n"; \
-              FILEPUT=1; \
-            } \
-            printf "  " NAME " " $$4 "\n"; \
-            NAME=""; \
-            next; \
-          } \
-        ' *.adb.metrix
-	@rm -f *.adb.metrix
 
