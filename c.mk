@@ -39,11 +39,14 @@ OEXES  := $(EXES:%=$(LIB)/%.o)
 ALIBS  := $(LIBS:%=$(LIB)/%.a)
 SOLIBS := $(LIBS:%=$(LIB)/%.so)
 
-OBJS := $(patsubst %.c,$(LIB)/%.o,$(wildcard *.c))
+SRCS := $(wildcard *.c) $(wildcard *.cpp) 
+OBJS := $(patsubst %.c,$(LIB)/%.o,$(wildcard *.c)) \
+        $(patsubst %.cpp,$(LIB)/%.o,$(wildcard *.cpp))
 
 
-.SUFFIXES : .h .c .hpp .cpp .o .a .so
-.PHONY : all install dep clean_dep clean_installed
+
+.SUFFIXES : .h .c .hpp .cpp .o .a .so .mk
+.PHONY : all install dep clean_dep clean_installed one_cdep
 .SECONDARY : $(BEXES) $(OEXES) $(ALIBS) $(SOLIBS) $(OBJS)
 
 ifdef LINKFROM
@@ -131,24 +134,33 @@ $(DEST_EXES)/% : %
 
 install : $(INSTALLED)
 
-# Add local dependancies of *.o on .c[pp] and .h[pp] in $(CDEP)
-dep dep : $(CDEP)
+# Add local dependencies of *.o on .c[pp] and .h[pp] in $(CDEP)
+# Call make to ré-evaluate wildcard (after LN)
+#  and to evaluate CARGS_<file>
+dep : 
+	@$(MAKE) $(SILENT) $(NOPRTDIR) $(CDEP)
+
+
+one_cdep :
+	@$(CC) $(DINCLD) $(CARGS_$(CARGS_NAME)) -MM $(CARGS_FILE) 2>&1 \
+	  | awk -v LIB=$(LIB) ' \
+	    ($$2 == "error:") {print >"/dev/stderr"; exit 1} \
+	    ($$1 ~ /.*\.o/) {print LIB"/"$$0; next} \
+	    {print}' >> $(CDEP)
 
 $(CDEP) : $(wildcard *.c *.cpp *.h *.hpp)
-	@LIST=`ls *.c *.cpp 2>/dev/null`; \
-	if [ -z "$$LIST" ] ; then \
-	  echo "" > $(CDEP); \
-	  exit 0; \
-	fi; \
-	$(CC) $(DINCLD) -w -MM `ls *.c *.cpp 2>/dev/null` 2>&1 | awk -v LIB=$(LIB) ' \
-	  ($$2 == "error:") {print >"/dev/stderr"; exit 1} \
-	  ($$1 ~ /.*\.o/) {print LIB"/"$$0; next} \
-	  {print}' > $(CDEP); \
+	@echo CDEP
+	@echo -n "" > $(CDEP); \
+	for FILE in $(SRCS); do \
+	  export CARGS_FILE=$$FILE; \
+	  export CARGS_NAME=`basename $$FILE .c`; \
+	  export CARGS_NAME=`basename $$CARGS_NAME .cpp`; \
+	 $(MAKE) $(NOPRTDIR) one_cdep; \
+	done; \
 	if [ $$? -ne 0 ] ; then \
 	  rm -f $(CDEP); \
 	  exit 1; \
 	fi
-
 
 clean_dep : clean_git
 	@$(RM) $(CDEP)
